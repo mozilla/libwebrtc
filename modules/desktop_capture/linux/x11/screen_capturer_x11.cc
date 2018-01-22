@@ -302,7 +302,7 @@ bool ScreenCapturerX11::GetSourceList(SourceList* sources) {
     char* monitor_title = XGetAtomName(display(), m.name);
 
     // Note name is an X11 Atom used to id the monitor.
-    sources->push_back({static_cast<SourceId>(m.name), monitor_title});
+    sources->push_back({static_cast<SourceId>(m.name), 0, monitor_title});
     XFree(monitor_title);
   }
 

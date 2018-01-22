@@ -11,30 +11,39 @@
 #ifndef MODULES_DESKTOP_CAPTURE_LINUX_X11_X_ERROR_TRAP_H_
 #define MODULES_DESKTOP_CAPTURE_LINUX_X11_X_ERROR_TRAP_H_
 
-#include <X11/Xlib.h>
-
-#include "rtc_base/synchronization/mutex.h"
+#include <X11/Xlibint.h>
+#undef max // Xlibint.h defines this and it breaks std::max
+#undef min // Xlibint.h defines this and it breaks std::min
 
 namespace webrtc {
 
-// Helper class that registers an X Window error handler. Caller can use
+// Helper class that registers X Window error handler. Caller can use
 // GetLastErrorAndDisable() to get the last error that was caught, if any.
+// An XErrorTrap may be constructed on any thread, but errors are collected
+// from all threads and so |display| should be used only on one thread.
+// Other Displays are unaffected.
 class XErrorTrap {
  public:
   explicit XErrorTrap(Display* display);
+  ~XErrorTrap();
 
   XErrorTrap(const XErrorTrap&) = delete;
   XErrorTrap& operator=(const XErrorTrap&) = delete;
 
-  ~XErrorTrap();
-
-  // Returns the last error if one was caught, otherwise 0. Also unregisters the
-  // error handler and replaces it with `original_error_handler_`.
+  // Returns last error and removes unregisters the error handler.
+  // Must not be called more than once.
   int GetLastErrorAndDisable();
 
  private:
-  MutexLock mutex_lock_;
-  XErrorHandler original_error_handler_ = nullptr;
+  static Bool XServerErrorHandler(Display* display, xReply* rep,
+                                  char* /* buf */, int /* len */,
+                                  XPointer data);
+
+  _XAsyncHandler async_handler_;
+  Display* display_;
+  unsigned long last_ignored_request_;
+  int last_xserver_error_code_;
+  bool enabled_;
 };
 
 }  // namespace webrtc
