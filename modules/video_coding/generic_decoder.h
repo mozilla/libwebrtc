@@ -26,7 +26,7 @@ namespace webrtc {
 
 class VCMReceiveCallback;
 
-enum { kDecoderFrameMemoryLength = 10 };
+enum { kDecoderFrameMemoryLength = 30 };
 
 class VCMDecodedFrameCallback : public DecodedImageCallback {
  public:
