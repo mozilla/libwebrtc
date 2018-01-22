@@ -22,6 +22,7 @@
 #include "modules/desktop_capture/desktop_capturer.h"
 #include "modules/desktop_capture/desktop_geometry.h"
 #include "modules/desktop_capture/linux/x11/shared_x_display.h"
+#include "modules/desktop_capture/linux/x11/x_window_property.h"
 #include "modules/desktop_capture/linux/x11/window_finder_x11.h"
 #include "modules/desktop_capture/linux/x11/x_atom_cache.h"
 #include "modules/desktop_capture/linux/x11/x_server_pixel_buffer.h"
@@ -56,6 +57,9 @@ class WindowCapturerX11 : public DesktopCapturer,
 
   // Returns window title for the specified X `window`.
   bool GetWindowTitle(::Window window, std::string* title);
+
+  // Returns the id of the owning process.
+  int GetWindowProcessID(::Window window);
 
   Callback* callback_ = nullptr;
 

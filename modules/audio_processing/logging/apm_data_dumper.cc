@@ -35,14 +35,20 @@ std::string FormFileName(absl::string_view output_dir,
                          int instance_index,
                          int reinit_index,
                          absl::string_view suffix) {
-  char buf[1024];
-  rtc::SimpleStringBuilder ss(buf);
-  if (!output_dir.empty()) {
-    ss << output_dir;
-    if (output_dir.back() != kPathDelimiter) {
-      ss << kPathDelimiter;
-    }
+#ifdef WEBRTC_WIN
+  char sep = '\\';
+#else
+  char sep = '/';
+#endif
+
+  std::stringstream ss;
+  std::string base = webrtc::Trace::aec_debug_filename();
+  ss << base;
+
+  if (base.length() && base.back() != sep) {
+    ss << sep;
   }
+
   ss << name << "_" << instance_index << "-" << reinit_index << suffix;
   return ss.str();
 }
@@ -52,7 +58,8 @@ std::string FormFileName(absl::string_view output_dir,
 
 #if WEBRTC_APM_DEBUG_DUMP == 1
 ApmDataDumper::ApmDataDumper(int instance_index)
-    : instance_index_(instance_index) {}
+    : instance_index_(instance_index)
+    , debug_written_(0) {}
 #else
 ApmDataDumper::ApmDataDumper(int instance_index) {}
 #endif

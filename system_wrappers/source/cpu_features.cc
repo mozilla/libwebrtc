@@ -111,6 +111,7 @@ int GetCPUInfo(CPUFeature feature) {
   (void)feature;
   return 0;
 }
+
 #endif
 
 }  // namespace webrtc
