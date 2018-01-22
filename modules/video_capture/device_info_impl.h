@@ -42,6 +42,7 @@ class DeviceInfoImpl : public VideoCaptureModule::DeviceInfo {
   /* Initialize this object*/
 
   virtual int32_t Init() = 0;
+  int32_t Refresh() override { return 0; }
   /*
    * Fills the member variable _captureCapabilities with capabilities for the
    * given device name.
