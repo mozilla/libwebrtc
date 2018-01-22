@@ -256,6 +256,7 @@ LibvpxVp9Encoder::LibvpxVp9Encoder(const cricket::VideoCodec& codec,
       first_frame_in_picture_(true),
       ss_info_needed_(false),
       force_all_active_layers_(false),
+      num_cores_(0),
       is_flexible_mode_(false),
       variable_framerate_experiment_(ParseVariableFramerateConfig(trials)),
       variable_framerate_controller_(
@@ -579,6 +580,7 @@ int LibvpxVp9Encoder::InitEncode(const VideoCodec* inst,
 
   force_key_frame_ = true;
   pics_since_key_ = 0;
+  num_cores_ = settings.number_of_cores;
 
   scalability_mode_ = inst->GetScalabilityMode();
   if (scalability_mode_.has_value()) {
@@ -1151,6 +1153,14 @@ int LibvpxVp9Encoder::Encode(const VideoFrame& input_image,
     config_changed_ = false;
   }
 
+  if (input_image.width() != codec_.width ||
+      input_image.height() != codec_.height) {
+    int ret = UpdateCodecFrameSize(input_image);
+    if (ret < 0) {
+      return ret;
+    }
+  }
+
   RTC_DCHECK_EQ(input_image.width(), raw_->d_w);
   RTC_DCHECK_EQ(input_image.height(), raw_->d_h);
 
@@ -1271,6 +1281,48 @@ int LibvpxVp9Encoder::Encode(const VideoFrame& input_image,
   timestamp_ += duration;
 
   return WEBRTC_VIDEO_CODEC_OK;
+}
+
+int LibvpxVp9Encoder::UpdateCodecFrameSize(
+    const VideoFrame& input_image) {
+  RTC_LOG(LS_INFO) << "Reconfiging VP from " <<
+          codec_.width << "x" << codec_.height << " to " <<
+          input_image.width() << "x" << input_image.height();
+  // Preserve latest bitrate/framerate setting
+  // TODO: Mozilla - see below, we need to save more state here.
+  //uint32_t old_bitrate_kbit = config_->rc_target_bitrate;
+  //uint32_t old_framerate = codec_.maxFramerate;
+
+  codec_.width = input_image.width();
+  codec_.height = input_image.height();
+
+  vpx_img_free(raw_);
+  raw_ = vpx_img_wrap(NULL, VPX_IMG_FMT_I420, codec_.width, codec_.height,
+                      1, NULL);
+  // Update encoder context for new frame size.
+  config_->g_w = codec_.width;
+  config_->g_h = codec_.height;
+
+  // Determine number of threads based on the image size and #cores.
+  config_->g_threads = NumberOfThreads(codec_.width, codec_.height,
+                                       num_cores_);
+
+  // NOTE: We would like to do this the same way vp8 does it
+  // (with vpx_codec_enc_config_set()), but that causes asserts
+  // in AQ 3 (cyclic); and in AQ 0 it works, but on a resize to smaller
+  // than 1/2 x 1/2 original it asserts in convolve().  Given these
+  // bugs in trying to do it the "right" way, we basically re-do
+  // the initialization.
+  vpx_codec_destroy(encoder_); // clean up old state
+  int result = InitAndSetControlSettings(&codec_);
+  if (result == WEBRTC_VIDEO_CODEC_OK) {
+    // TODO: Mozilla rates have become much more complicated, we need to store
+    // more state or find another way of doing this.
+    //return SetRates(old_bitrate_kbit, old_framerate);
+    RTC_CHECK(false);
+    return WEBRTC_VIDEO_CODEC_UNINITIALIZED;
+  }
+  return result;
 }
 
 bool LibvpxVp9Encoder::PopulateCodecSpecific(CodecSpecificInfo* codec_specific,
