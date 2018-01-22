@@ -65,7 +65,7 @@ int32_t DeviceInfoImpl::GetCapability(const char* deviceUniqueIdUTF8,
 
   // Make sure the number is valid
   if (deviceCapabilityNumber >= (unsigned int)_captureCapabilities.size()) {
-    RTC_LOG(LS_ERROR) << "Invalid deviceCapabilityNumber "
+    RTC_LOG(LS_ERROR) << deviceUniqueIdUTF8 << " Invalid deviceCapabilityNumber "
                       << deviceCapabilityNumber << ">= number of capabilities ("
                       << _captureCapabilities.size() << ").";
     return -1;

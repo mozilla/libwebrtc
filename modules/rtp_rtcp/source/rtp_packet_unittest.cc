@@ -123,6 +123,18 @@ constexpr uint8_t kPacketWithMid[] = {
     0xbe, 0xde, 0x00, 0x01,
     0xb2, 'm', 'i', 'd'};
 
+constexpr uint8_t kCsrcAudioLevelExtensionId = 0xc;
+constexpr uint8_t kCsrcAudioLevelsSize = 4;
+constexpr uint8_t kCsrcAudioLevels[] = {0x7f, 0x00, 0x10, 0x08};
+constexpr uint8_t kPacketWithCsrcAudioLevels[] = {
+    0x90, kPayloadType, kSeqNumFirstByte, kSeqNumSecondByte,
+    0x65, 0x43, 0x12, 0x78,
+    0x12, 0x34, 0x56, 0x78,
+    0xbe, 0xde, 0x00, 0x02,
+    (kCsrcAudioLevelExtensionId << 4) | (kCsrcAudioLevelsSize - 1),
+          0x7f, 0x00, 0x10,
+    0x08, 0x00, 0x00, 0x00};
+
 constexpr uint32_t kCsrcs[] = {0x34567890, 0x32435465};
 constexpr uint8_t kPayload[] = {'p', 'a', 'y', 'l', 'o', 'a', 'd'};
 constexpr uint8_t kPacketPaddingSize = 8;
@@ -395,6 +407,24 @@ TEST(RtpPacketTest, FailsToSetUnregisteredExtension) {
 
   EXPECT_FALSE(packet.HasExtension<TransportSequenceNumber>());
   EXPECT_EQ(packet.GetExtension<TransportSequenceNumber>(), absl::nullopt);
+}
+
+TEST(RtpPacketTest, CreateWithDynamicSizedExtensionCsrcAudioLevel) {
+  RtpPacketToSend::ExtensionManager extensions;
+  extensions.Register<CsrcAudioLevel>(kCsrcAudioLevelExtensionId);
+  RtpPacketToSend packet(&extensions);
+  packet.SetPayloadType(kPayloadType);
+  packet.SetSequenceNumber(kSeqNum);
+  packet.SetTimestamp(kTimestamp);
+  packet.SetSsrc(kSsrc);
+  CsrcAudioLevelList levels;
+  levels.numAudioLevels = kCsrcAudioLevelsSize;
+  for (uint8_t i = 0; i < kCsrcAudioLevelsSize; i++) {
+    levels.arrOfAudioLevels[i] = kCsrcAudioLevels[i];
+  }
+  packet.SetExtension<CsrcAudioLevel>(levels);
+  EXPECT_THAT(kPacketWithCsrcAudioLevels,
+    ElementsAreArray(packet.data(), packet.size()));
 }
 
 TEST(RtpPacketTest, SetReservedExtensionsAfterPayload) {

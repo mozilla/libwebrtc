@@ -89,6 +89,19 @@ inline bool operator!=(const AbsoluteCaptureTime& lhs,
   return !(lhs == rhs);
 }
 
+enum { kRtpCsrcSize = 15 };  // RFC 3550 page 13
+
+// Audio level of CSRCs See:
+// https://tools.ietf.org/html/rfc6465
+struct CsrcAudioLevelList {
+  CsrcAudioLevelList() : numAudioLevels(0) { }
+  CsrcAudioLevelList(const CsrcAudioLevelList&) = default;
+  CsrcAudioLevelList& operator=(const CsrcAudioLevelList&) = default;
+  uint8_t numAudioLevels;
+  // arrOfAudioLevels has the same ordering as RTPHeader.arrOfCSRCs
+  uint8_t arrOfAudioLevels[kRtpCsrcSize];
+};
+
 struct RTPHeaderExtension {
   RTPHeaderExtension();
   RTPHeaderExtension(const RTPHeaderExtension& other);
@@ -144,9 +157,9 @@ struct RTPHeaderExtension {
   std::string mid;
 
   absl::optional<ColorSpace> color_space;
-};
 
-enum { kRtpCsrcSize = 15 };  // RFC 3550 page 13
+  CsrcAudioLevelList csrcAudioLevels;
+};
 
 struct RTC_EXPORT RTPHeader {
   RTPHeader();

@@ -57,6 +57,7 @@ bool WindowCapturerX11::GetSourceList(SourceList* sources) {
   return GetWindowList(&atom_cache_, [this, sources](::Window window) {
     Source w;
     w.id = window;
+    w.pid = (pid_t)GetWindowProcessID(window);
     if (this->GetWindowTitle(window, &w.title)) {
       sources->push_back(w);
     }
@@ -235,6 +236,14 @@ bool WindowCapturerX11::GetWindowTitle(::Window window, std::string* title) {
       XFree(window_name.value);
   }
   return result;
+}
+
+int WindowCapturerX11::GetWindowProcessID(::Window window) {
+  // Get _NET_WM_PID property of the window.
+  Atom process_atom = XInternAtom(display(), "_NET_WM_PID", True);
+  XWindowProperty<uint32_t> process_id(display(), window, process_atom);
+
+  return process_id.is_valid() ? *process_id.data() : 0;
 }
 
 // static
