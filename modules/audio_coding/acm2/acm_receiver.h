@@ -19,6 +19,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <atomic>
 
 #include "absl/types/optional.h"
 #include "api/array_view.h"
