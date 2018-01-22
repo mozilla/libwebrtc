@@ -201,7 +201,7 @@ void RTCPSender::SetRTCPStatus(RtcpMode new_method) {
     next_time_to_send_rtcp_ = absl::nullopt;
   } else if (method_ == RtcpMode::kOff) {
     // When switching on, reschedule the next packet
-    SetNextRtcpSendEvaluationDuration(report_interval_ / 2);
+    SetNextRtcpSendEvaluationDuration(RTCP_INTERVAL_RAPID_SYNC_MS / 2);
   }
   method_ = new_method;
 }

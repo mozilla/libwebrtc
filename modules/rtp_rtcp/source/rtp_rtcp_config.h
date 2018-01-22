@@ -18,8 +18,13 @@ namespace webrtc {
 constexpr int kDefaultMaxReorderingThreshold = 50;  // In sequence numbers.
 constexpr int kRtcpMaxNackFields = 253;
 
+constexpr TimeDelta RTCP_INTERVAL_RAPID_SYNC_MS =
+    TimeDelta::Millis(100); // RFX 6051
 constexpr TimeDelta RTCP_SEND_BEFORE_KEY_FRAME = TimeDelta::Millis(100);
 constexpr int RTCP_MAX_REPORT_BLOCKS = 31;  // RFC 3550 page 37
+
+enum { RTCP_NUMBER_OF_SR = 60 };
+
 }  // namespace webrtc
 
 #endif  // MODULES_RTP_RTCP_SOURCE_RTP_RTCP_CONFIG_H_

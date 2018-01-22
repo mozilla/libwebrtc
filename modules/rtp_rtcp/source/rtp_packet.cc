@@ -203,6 +203,10 @@ void RtpPacket::ZeroMutableExtensions() {
         // Non-mutable extension. Don't change it.
         break;
       }
+      case RTPExtensionType::kRtpExtensionCsrcAudioLevel: {
+        // TODO: This is a Mozilla addition, we need to add a handler for this.
+        RTC_CHECK(false);
+      }
     }
   }
 }

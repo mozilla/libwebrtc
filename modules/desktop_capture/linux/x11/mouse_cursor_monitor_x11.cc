@@ -38,6 +38,7 @@ namespace {
 // searches up the list of the windows to find the root child that corresponds
 // to `window`.
 Window GetTopLevelWindow(Display* display, Window window) {
+  webrtc::XErrorTrap error_trap(display);
   while (true) {
     // If the window is in WithdrawnState then look at all of its children.
     ::Window root, parent;
@@ -104,7 +105,7 @@ MouseCursorMonitorX11::~MouseCursorMonitorX11() {
 }
 
 void MouseCursorMonitorX11::Init(Callback* callback, Mode mode) {
-  // Init can be called only once per instance of MouseCursorMonitor.
+  // Init can be called only if not started
   RTC_DCHECK(!callback_);
   RTC_DCHECK(callback);
 
@@ -116,6 +117,7 @@ void MouseCursorMonitorX11::Init(Callback* callback, Mode mode) {
 
   if (have_xfixes_) {
     // Register for changes to the cursor shape.
+    XErrorTrap error_trap(display());
     XFixesSelectCursorInput(display(), window_, XFixesDisplayCursorNotifyMask);
     x_display_->AddEventHandler(xfixes_event_base_ + XFixesCursorNotify, this);
 
@@ -243,8 +245,8 @@ MouseCursorMonitor* MouseCursorMonitorX11::CreateForScreen(
     ScreenId screen) {
   if (!options.x_display())
     return NULL;
-  return new MouseCursorMonitorX11(
-      options, DefaultRootWindow(options.x_display()->display()));
+  WindowId window = DefaultRootWindow(options.x_display()->display());
+  return new MouseCursorMonitorX11(options, window);
 }
 
 std::unique_ptr<MouseCursorMonitor> MouseCursorMonitorX11::Create(

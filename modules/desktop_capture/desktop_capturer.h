@@ -77,6 +77,7 @@ class RTC_EXPORT DesktopCapturer {
   struct Source {
     // The unique id to represent a Source of current DesktopCapturer.
     SourceId id;
+    pid_t pid;
 
     // Title of the window or screen in UTF-8 encoding, maybe empty. This field
     // should not be used to identify a source.
@@ -199,6 +200,11 @@ class RTC_EXPORT DesktopCapturer {
   // Creates a platform specific DesktopCapturer instance which targets to
   // capture screens.
   static std::unique_ptr<DesktopCapturer> CreateRawScreenCapturer(
+      const DesktopCaptureOptions& options);
+
+  // Creates a platform specific DesktopCapturer instance which targets to
+  // capture apps.
+  static std::unique_ptr<DesktopCapturer> CreateRawAppCapturer(
       const DesktopCaptureOptions& options);
 };
 

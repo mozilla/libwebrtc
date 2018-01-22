@@ -18,6 +18,16 @@
 #include "rtc_base/logging.h"
 #include "rtc_base/platform_thread.h"
 
+namespace mozilla {
+namespace jni {
+jclass GetClassRef(JNIEnv* aEnv, const char* aClassName);
+}
+}
+
+#define TAG "JVM"
+#define ALOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
+#define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
+
 namespace webrtc {
 
 JVM* g_jvm;
@@ -40,14 +50,11 @@ struct {
 void LoadClasses(JNIEnv* jni) {
   RTC_LOG(LS_INFO) << "LoadClasses:";
   for (auto& c : loaded_classes) {
-    jclass localRef = FindClass(jni, c.name);
-    RTC_LOG(LS_INFO) << "name: " << c.name;
-    CHECK_EXCEPTION(jni) << "Error during FindClass: " << c.name;
-    RTC_CHECK(localRef) << c.name;
-    jclass globalRef = reinterpret_cast<jclass>(jni->NewGlobalRef(localRef));
-    CHECK_EXCEPTION(jni) << "Error during NewGlobalRef: " << c.name;
-    RTC_CHECK(globalRef) << c.name;
-    c.clazz = globalRef;
+    ALOGD("name: %s", c.name);
+    jclass clsRef = mozilla::jni::GetClassRef(jni, c.name);
+    RTC_CHECK(clsRef) << c.name;
+    c.clazz = static_cast<jclass>(jni->NewGlobalRef(clsRef));
+    jni->DeleteLocalRef(clsRef);
   }
 }
 
@@ -216,8 +223,9 @@ std::string JNIEnvironment::JavaToStdString(const jstring& j_string) {
 
 // static
 void JVM::Initialize(JavaVM* jvm) {
-  RTC_LOG(LS_INFO) << "JVM::Initialize";
-  RTC_CHECK(!g_jvm);
+  if (g_jvm) {
+    return;
+  }
   g_jvm = new JVM(jvm);
 }
 
