@@ -52,7 +52,7 @@ bool GetScreenList(DesktopCapturer::SourceList* screens,
       continue;
     }
 
-    screens->push_back({device_index, std::string()});
+    screens->push_back({device_index, 0, std::string()});
     if (device_names) {
       device_names->push_back(rtc::ToUtf8(device.DeviceName));
     }
@@ -170,6 +170,7 @@ DesktopVector GetDpiForMonitor(HMONITOR monitor) {
 
 DesktopRect GetScreenRect(const DesktopCapturer::SourceId screen,
                           const std::wstring& device_key) {
+  RTC_DCHECK(IsGUIThread(false));
   if (screen == kFullDesktopScreenId) {
     return GetFullscreenRect();
   }
