@@ -57,6 +57,7 @@ bool WindowCapturerX11::GetSourceList(SourceList* sources) {
   return GetWindowList(&atom_cache_, [this, sources](::Window window) {
     Source w;
     w.id = window;
+    w.pid = (pid_t)GetWindowProcessID(window);
     if (this->GetWindowTitle(window, &w.title)) {
       sources->push_back(w);
     }
@@ -140,14 +141,13 @@ void WindowCapturerX11::Start(Callback* callback) {
 
 void WindowCapturerX11::CaptureFrame() {
   TRACE_EVENT0("webrtc", "WindowCapturerX11::CaptureFrame");
+  x_display_->ProcessPendingXEvents();
 
   if (!x_server_pixel_buffer_.IsWindowValid()) {
     RTC_LOG(LS_ERROR) << "The window is no longer valid.";
     callback_->OnCaptureResult(Result::ERROR_PERMANENT, nullptr);
     return;
   }
-
-  x_display_->ProcessPendingXEvents();
 
   if (!has_composite_extension_) {
     // Without the Xcomposite extension we capture when the whole window is
@@ -235,6 +235,14 @@ bool WindowCapturerX11::GetWindowTitle(::Window window, std::string* title) {
       XFree(window_name.value);
   }
   return result;
+}
+
+int WindowCapturerX11::GetWindowProcessID(::Window window) {
+  // Get _NET_WM_PID property of the window.
+  Atom process_atom = XInternAtom(display(), "_NET_WM_PID", True);
+  XWindowProperty<uint32_t> process_id(display(), window, process_atom);
+
+  return process_id.is_valid() ? *process_id.data() : 0;
 }
 
 // static

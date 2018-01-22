@@ -130,6 +130,10 @@ bool IsNonVolatile(RTPExtensionType type) {
     case kRtpExtensionNumberOfExtensions:
       RTC_DCHECK_NOTREACHED();
       return false;
+    case kRtpExtensionCsrcAudioLevel:
+      // TODO: Mozilla implement for CsrcAudioLevel
+      RTC_CHECK(false);
+      return false;
   }
   RTC_CHECK_NOTREACHED();
 }
