@@ -236,6 +236,15 @@ class ModuleRtpRtcpImpl2 final : public RtpRtcpInterface,
   void SendCombinedRtcpPacket(
       std::vector<std::unique_ptr<rtcp::RtcpPacket>> rtcp_packets) override;
 
+  bool GetSendReportMetadata(const uint32_t send_report,
+                             uint64_t *time_of_send,
+                             uint32_t *packet_count,
+                             uint64_t *octet_count) override
+  {
+    // Not implemented.
+    RTC_CHECK(false);
+  }
+
   // Video part.
   int32_t SendLossNotification(uint16_t last_decoded_seq_num,
                                uint16_t last_received_seq_num,
