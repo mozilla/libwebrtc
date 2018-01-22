@@ -292,6 +292,21 @@ class ColorSpaceExtension {
   static size_t WriteLuminance(uint8_t* data, float f, int denominator);
 };
 
+class CsrcAudioLevel {
+ public:
+  static constexpr RTPExtensionType kId = kRtpExtensionCsrcAudioLevel;
+  static constexpr absl::string_view Uri() {
+    return RtpExtension::kCsrcAudioLevelsUri;
+  }
+  static constexpr const char* kUri =
+      "urn:ietf:params:rtp-hdrext:csrc-audio-level";
+
+  static bool Parse(rtc::ArrayView<const uint8_t> data,
+                    CsrcAudioLevelList* csrcAudioLevels);
+  static size_t ValueSize(const CsrcAudioLevelList& csrcAudioLevels);
+  static bool Write(rtc::ArrayView<uint8_t> data, const CsrcAudioLevelList& csrcAudioLevels);
+};
+
 // Base extension class for RTP header extensions which are strings.
 // Subclasses must defined kId and kUri static constexpr members.
 class BaseRtpStringExtension {
