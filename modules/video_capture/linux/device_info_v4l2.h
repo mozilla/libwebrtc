@@ -15,6 +15,9 @@
 
 #include "modules/video_capture/device_info_impl.h"
 
+#include "rtc_base/platform_thread.h"
+#include <sys/inotify.h>
+
 namespace webrtc {
 namespace videocapturemodule {
 class DeviceInfoV4l2 : public DeviceInfoImpl {
@@ -28,7 +31,8 @@ class DeviceInfoV4l2 : public DeviceInfoImpl {
                         char* deviceUniqueIdUTF8,
                         uint32_t deviceUniqueIdUTF8Length,
                         char* productUniqueIdUTF8 = 0,
-                        uint32_t productUniqueIdUTF8Length = 0) override;
+                        uint32_t productUniqueIdUTF8Length = 0,
+                        pid_t* pid=0) override;
   /*
    * Fills the membervariable _captureCapabilities with capabilites for the
    * given device name.
@@ -45,6 +49,18 @@ class DeviceInfoV4l2 : public DeviceInfoImpl {
 
  private:
   bool IsDeviceNameMatches(const char* name, const char* deviceUniqueIdUTF8);
+
+#ifdef WEBRTC_LINUX
+  void HandleEvent(inotify_event* event, int fd);
+  int EventCheck(int fd);
+  int HandleEvents(int fd);
+  int ProcessInotifyEvents();
+  std::unique_ptr<rtc::PlatformThread> _inotifyEventThread;
+  static void InotifyEventThread(void*);
+  void InotifyProcess();
+  int _fd_v4l, _fd_dev, _wd_v4l, _wd_dev; /* accessed on InotifyEventThread thread */
+  std::atomic<bool> _isShutdown;
+#endif
 };
 }  // namespace videocapturemodule
 }  // namespace webrtc

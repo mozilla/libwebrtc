@@ -72,8 +72,8 @@ void FakeDesktopCapturer::SetSharedMemoryFactory(
 }
 
 bool FakeDesktopCapturer::GetSourceList(DesktopCapturer::SourceList* sources) {
-  sources->push_back({kWindowId, "A-Fake-DesktopCapturer-Window"});
-  sources->push_back({kScreenId});
+  sources->push_back({kWindowId, 1, "A-Fake-DesktopCapturer-Window"});
+  sources->push_back({kScreenId, 1});
   return true;
 }
 
