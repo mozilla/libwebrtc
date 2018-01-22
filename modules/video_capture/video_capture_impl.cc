@@ -77,7 +77,6 @@ VideoCaptureImpl::VideoCaptureImpl()
       _requestedCapability(),
       _lastProcessTimeNanos(rtc::TimeNanos()),
       _lastFrameRateCallbackTimeNanos(rtc::TimeNanos()),
-      _dataCallBack(NULL),
       _rawDataCallBack(NULL),
       _lastProcessFrameTimeNanos(rtc::TimeNanos()),
       _rotateFrame(kVideoRotation_0),
@@ -91,7 +90,6 @@ VideoCaptureImpl::VideoCaptureImpl()
 
 VideoCaptureImpl::~VideoCaptureImpl() {
   RTC_DCHECK_RUN_ON(&api_checker_);
-  DeRegisterCaptureDataCallback();
   if (_deviceUniqueId)
     delete[] _deviceUniqueId;
 }
@@ -100,28 +98,41 @@ void VideoCaptureImpl::RegisterCaptureDataCallback(
     rtc::VideoSinkInterface<VideoFrame>* dataCallBack) {
   MutexLock lock(&api_lock_);
   RTC_DCHECK(!_rawDataCallBack);
-  _dataCallBack = dataCallBack;
+  _dataCallBacks.insert(dataCallBack);
 }
 
 void VideoCaptureImpl::RegisterCaptureDataCallback(
     RawVideoSinkInterface* dataCallBack) {
   MutexLock lock(&api_lock_);
-  RTC_DCHECK(!_dataCallBack);
+  RTC_DCHECK(_dataCallBacks.empty());
   _rawDataCallBack = dataCallBack;
 }
 
-void VideoCaptureImpl::DeRegisterCaptureDataCallback() {
+void VideoCaptureImpl::DeRegisterCaptureDataCallback(
+    rtc::VideoSinkInterface<VideoFrame>* dataCallBack) {
   MutexLock lock(&api_lock_);
-  _dataCallBack = NULL;
+  auto it = _dataCallBacks.find(dataCallBack);
+  if (it != _dataCallBacks.end()) {
+    _dataCallBacks.erase(it);
+  }
   _rawDataCallBack = NULL;
 }
+
+int32_t VideoCaptureImpl::StopCaptureIfAllClientsClose() {
+  if (_dataCallBacks.empty()) {
+    return StopCapture();
+  } else {
+    return 0;
+  }
+}
+
 int32_t VideoCaptureImpl::DeliverCapturedFrame(VideoFrame& captureFrame) {
   RTC_CHECK_RUNS_SERIALIZED(&capture_checker_);
 
   UpdateFrameCount();  // frame count used for local frame rate callback.
 
-  if (_dataCallBack) {
-    _dataCallBack->OnFrame(captureFrame);
+  for (auto dataCallBack : _dataCallBacks) {
+    dataCallBack->OnFrame(captureFrame);
   }
 
   return 0;
@@ -214,7 +225,7 @@ int32_t VideoCaptureImpl::IncomingFrame(uint8_t* videoFrame,
       buffer.get()->StrideV(), 0, 0,  // No Cropping
       width, height, target_width, target_height, rotation_mode,
       ConvertVideoType(frameInfo.videoType));
-  if (conversionResult < 0) {
+  if (conversionResult != 0) {
     RTC_LOG(LS_ERROR) << "Failed to convert capture frame from type "
                       << static_cast<int>(frameInfo.videoType) << "to I420.";
     return -1;
@@ -228,6 +239,13 @@ int32_t VideoCaptureImpl::IncomingFrame(uint8_t* videoFrame,
           .set_rotation(!apply_rotation_ ? _rotateFrame : kVideoRotation_0)
           .build();
   captureFrame.set_ntp_time_ms(captureTime);
+
+  // This is one ugly hack to let CamerasParent know what rotation
+  // the frame was captured at. Note that this goes against the intended
+  // meaning of rotation of the frame (how to rotate it before rendering).
+  // We do this so CamerasChild can scale to the proper dimensions
+  // later on in the pipe.
+  captureFrame.set_rotation(_rotateFrame);
 
   DeliverCapturedFrame(captureFrame);
 
