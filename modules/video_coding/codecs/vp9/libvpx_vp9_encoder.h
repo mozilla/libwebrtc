@@ -67,6 +67,9 @@ class LibvpxVp9Encoder : public VP9Encoder {
   // Call encoder initialize function and set control settings.
   int InitAndSetControlSettings(const VideoCodec* inst);
 
+  // Update frame size for codec.
+  int UpdateCodecFrameSize(const VideoFrame& input_image);
+
   bool PopulateCodecSpecific(CodecSpecificInfo* codec_specific,
                              absl::optional<int>* spatial_idx,
                              absl::optional<int>* temporal_idx,
@@ -150,6 +153,7 @@ class LibvpxVp9Encoder : public VP9Encoder {
   VideoBitrateAllocation current_bitrate_allocation_;
   bool ss_info_needed_;
   bool force_all_active_layers_;
+  uint8_t num_cores_;
 
   std::unique_ptr<ScalableVideoController> svc_controller_;
   absl::optional<ScalabilityMode> scalability_mode_;

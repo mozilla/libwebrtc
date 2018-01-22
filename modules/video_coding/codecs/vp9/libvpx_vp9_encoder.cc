@@ -254,6 +254,7 @@ LibvpxVp9Encoder::LibvpxVp9Encoder(const cricket::VideoCodec& codec,
       first_frame_in_picture_(true),
       ss_info_needed_(false),
       force_all_active_layers_(false),
+      num_cores_(0),
       is_flexible_mode_(false),
       variable_framerate_experiment_(ParseVariableFramerateConfig(trials)),
       variable_framerate_controller_(
@@ -577,6 +578,7 @@ int LibvpxVp9Encoder::InitEncode(const VideoCodec* inst,
 
   force_key_frame_ = true;
   pics_since_key_ = 0;
+  num_cores_ = settings.number_of_cores;
 
   scalability_mode_ = inst->GetScalabilityMode();
   if (scalability_mode_.has_value()) {

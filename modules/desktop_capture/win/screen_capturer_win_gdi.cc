@@ -186,6 +186,7 @@ void ScreenCapturerWinGdi::PrepareCaptureResources() {
 }
 
 bool ScreenCapturerWinGdi::CaptureImage() {
+  RTC_DCHECK(IsGUIThread(false));
   DesktopRect screen_rect =
       GetScreenRect(current_screen_id_, current_device_key_);
   if (screen_rect.is_empty()) {
