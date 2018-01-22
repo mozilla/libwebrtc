@@ -87,6 +87,11 @@ struct RTCPReceiver::TmmbrInformation {
 struct RTCPReceiver::ReportBlockWithRtt {
   RTCPReportBlock report_block;
 
+  uint32_t remotePacketsReceived = 0;
+  uint64_t remoteOctetsReceived = 0;
+  uint32_t lastReceivedRRNTPsecs = 0;
+  uint32_t lastReceivedRRNTPfrac = 0;
+
   int64_t last_rtt_ms = 0;
   int64_t min_rtt_ms = 0;
   int64_t max_rtt_ms = 0;
@@ -453,6 +458,16 @@ void RTCPReceiver::HandleReportBlock(const ReportBlock& report_block,
   // Filter out all report blocks that are not for us.
   if (registered_ssrcs_.count(report_block.source_ssrc()) == 0)
     return;
+
+  // To avoid problem with acquiring _criticalSectionRTCPSender while holding
+  // _criticalSectionRTCPReceiver.
+  rtcp_receiver_lock_.Leave();
+  uint64_t sendTimeMS = 0;
+  uint32_t sentPackets = 0;
+  uint64_t sentOctets = 0;
+  rtp_rtcp_->GetSendReportMetadata(report_block.last_sr(),
+                                   &sendTimeMS, &sentPackets, &sentOctets);
+  rtcp_receiver_lock_.Enter();
 
   last_received_rb_ms_ = clock_->TimeInMilliseconds();
 

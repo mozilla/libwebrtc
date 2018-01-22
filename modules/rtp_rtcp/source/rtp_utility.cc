@@ -42,7 +42,7 @@ bool StringCompare(const char* str1, const char* str2,
                    const uint32_t length) {
   return _strnicmp(str1, str2, length) == 0;
 }
-#elif defined(WEBRTC_LINUX) || defined(WEBRTC_MAC)
+#elif defined(WEBRTC_LINUX) || defined(WEBRTC_BSD) || defined(WEBRTC_MAC)
 bool StringCompare(const char* str1, const char* str2,
                    const uint32_t length) {
   return strncasecmp(str1, str2, length) == 0;
@@ -161,12 +161,16 @@ bool RtpHeaderParser::ParseRtcp(RTPHeader* header) const {
   header->payloadType  = PT;
   header->ssrc         = SSRC;
   header->headerLength = 4 + (len << 2);
+  if (header->headerLength > static_cast<size_t>(length)) {
+    return false;
+  }
 
   return true;
 }
 
 bool RtpHeaderParser::Parse(RTPHeader* header,
-                            RtpHeaderExtensionMap* ptrExtensionMap) const {
+                            RtpHeaderExtensionMap* ptrExtensionMap,
+                            bool secured) const {
   const ptrdiff_t length = _ptrRTPDataEnd - _ptrRTPDataBegin;
   if (length < kRtpMinParseLength) {
     return false;
@@ -198,12 +202,6 @@ bool RtpHeaderParser::Parse(RTPHeader* header,
     return false;
   }
 
-  const size_t CSRCocts = CC * 4;
-
-  if ((ptr + CSRCocts) > _ptrRTPDataEnd) {
-    return false;
-  }
-
   header->markerBit      = M;
   header->payloadType    = PT;
   header->sequenceNumber = sequenceNumber;
@@ -212,13 +210,21 @@ bool RtpHeaderParser::Parse(RTPHeader* header,
   header->numCSRCs       = CC;
   header->paddingLength  = P ? *(_ptrRTPDataEnd - 1) : 0;
 
+  // 12 == sizeof(RFC rtp header) == kRtpMinParseLength, each CSRC=4 bytes
+  header->headerLength   = 12 + (CC * 4);
+  // not a full validation, just safety against underflow.  Padding must
+  // start after the header.  We can have 0 payload bytes left, note.
+  if (!secured &&
+      (header->paddingLength + header->headerLength > (size_t) length)) {
+    return false;
+  }
+
   for (uint8_t i = 0; i < CC; ++i) {
     uint32_t CSRC = ByteReader<uint32_t>::ReadBigEndian(ptr);
     ptr += 4;
     header->arrOfCSRCs[i] = CSRC;
   }
-
-  header->headerLength   = 12 + CSRCocts;
+  assert((ptr - _ptrRTPDataBegin) == (ptrdiff_t) header->headerLength);
 
   // If in effect, MAY be omitted for those packets for which the offset
   // is zero.
@@ -259,8 +265,9 @@ bool RtpHeaderParser::Parse(RTPHeader* header,
     |                        header extension                       |
     |                             ....                              |
     */
-    const ptrdiff_t remain = _ptrRTPDataEnd - ptr;
-    if (remain < 4) {
+    // earlier test ensures we have at least paddingLength bytes left
+    const ptrdiff_t remain = (_ptrRTPDataEnd - ptr) - header->paddingLength;
+    if (remain < 4) { // minimum header extension length = 32 bits
       return false;
     }
 
@@ -313,6 +320,11 @@ void RtpHeaderParser::ParseOneByteExtensionHeader(
     // number of bytes - 1.
     const int id = (*ptr & 0xf0) >> 4;
     const int len = (*ptr & 0x0f);
+    if (ptr + len + 1 > ptrRTPDataExtensionEnd) {
+      RTC_LOG(LS_WARNING)
+          << "RTP extension header length out of bounds. Terminate parsing.";
+      return;
+    }
     ptr++;
 
     if (id == 0) {
@@ -336,7 +348,9 @@ void RtpHeaderParser::ParseOneByteExtensionHeader(
     RTPExtensionType type = ptrExtensionMap->GetType(id);
     if (type == RtpHeaderExtensionMap::kInvalidType) {
       // If we encounter an unknown extension, just skip over it.
-      RTC_LOG(LS_WARNING) << "Failed to find extension id: " << id;
+      // Mozilla - we reuse the parse for demux, without registering extensions.
+      // Reduce log-spam by switching to VERBOSE
+      RTC_LOG(LS_VERBOSE) << "Failed to find extension id: " << id;
     } else {
       switch (type) {
         case kRtpExtensionTransmissionTimeOffset: {
@@ -480,6 +494,20 @@ void RtpHeaderParser::ParseOneByteExtensionHeader(
         }
         case kRtpExtensionMid: {
           header->extension.mid.Set(rtc::MakeArrayView(ptr, len + 1));
+          break;
+        }
+        case kRtpExtensionCsrcAudioLevel: {
+          auto& levels = header->extension.csrcAudioLevels;
+          levels.numAudioLevels = static_cast<uint8_t>(len + 1);
+          if (levels.numAudioLevels > kRtpCsrcSize)  {
+            RTC_LOG(LS_WARNING) << "Incorrect number of CSRC audio levels: " <<
+                                   levels.numAudioLevels;
+            levels.numAudioLevels = 0;
+            return;
+          }
+          for (uint8_t i = 0; i < levels.numAudioLevels; i++) {
+            levels.arrOfAudioLevels[i] = ptr[i] & 0x7f;
+          }
           break;
         }
         case kRtpExtensionNone:

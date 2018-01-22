@@ -51,6 +51,7 @@ class DesktopAndCursorComposer : public DesktopCapturer,
       std::unique_ptr<SharedMemoryFactory> shared_memory_factory) override;
   void CaptureFrame() override;
   void SetExcludedWindow(WindowId window) override;
+  bool FocusOnSelectedSource() override;
 
  private:
   // Allows test cases to use a fake MouseCursorMonitor implementation.

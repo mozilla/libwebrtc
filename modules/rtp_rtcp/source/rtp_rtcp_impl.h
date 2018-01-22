@@ -89,6 +89,9 @@ class ModuleRtpRtcpImpl : public RtpRtcp, public RTCPReceiver::ModuleRtpRtcp {
 
   void SetCsrcs(const std::vector<uint32_t>& csrcs) override;
 
+  int32_t SetRID(const char *rid) override;
+  int32_t SetMID(const char *mid) override;
+
   RTCPSender::FeedbackState GetFeedbackState();
 
   void SetRtxSendStatus(int mode) override;
@@ -224,6 +227,11 @@ class ModuleRtpRtcpImpl : public RtpRtcp, public RTCPReceiver::ModuleRtpRtcp {
   void SetStorePacketsStatus(bool enable, uint16_t number_to_store) override;
 
   bool StorePackets() const override;
+
+  bool GetSendReportMetadata(const uint32_t send_report,
+                             uint64_t *time_of_send,
+                             uint32_t *packet_count,
+                             uint64_t *octet_count) override;
 
   // Called on receipt of RTCP report block from remote side.
   void RegisterRtcpStatisticsCallback(

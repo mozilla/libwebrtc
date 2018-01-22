@@ -45,7 +45,9 @@ ScreenCapturerWinGdi::ScreenCapturerWinGdi(
 
     if (dwmapi_library_) {
       composition_func_ = reinterpret_cast<DwmEnableCompositionFunc>(
-          GetProcAddress(dwmapi_library_, "DwmEnableComposition"));
+        GetProcAddress(dwmapi_library_, "DwmEnableComposition"));
+      composition_enabled_func_ = reinterpret_cast<DwmIsCompositionEnabledFunc>
+        (GetProcAddress(dwmapi_library_, "DwmIsCompositionEnabled"));
     }
   }
 }
@@ -70,6 +72,7 @@ void ScreenCapturerWinGdi::SetSharedMemoryFactory(
 }
 
 void ScreenCapturerWinGdi::CaptureFrame() {
+  RTC_DCHECK(IsGUIThread(false));
   int64_t capture_start_time_nanos = rtc::TimeNanos();
 
   queue_.MoveToNextFrame();
@@ -175,6 +178,7 @@ void ScreenCapturerWinGdi::PrepareCaptureResources() {
 }
 
 bool ScreenCapturerWinGdi::CaptureImage() {
+  RTC_DCHECK(IsGUIThread(false));
   DesktopRect screen_rect =
       GetScreenRect(current_screen_id_, current_device_key_);
   if (screen_rect.is_empty())

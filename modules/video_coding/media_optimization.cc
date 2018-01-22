@@ -148,5 +148,6 @@ void MediaOptimization::ProcessIncomingFrameRate(int64_t now) {
     }
   }
 }
+
 }  // namespace media_optimization
 }  // namespace webrtc

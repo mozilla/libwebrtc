@@ -11,6 +11,7 @@
 #ifndef COMMON_TYPES_H_
 #define COMMON_TYPES_H_
 
+#include <atomic>
 #include <stddef.h>
 #include <string.h>
 #include <ostream>
@@ -366,14 +367,36 @@ struct AudioDecodingCallStats {
         decoded_plc_cng(0),
         decoded_muted_output(0) {}
 
-  int calls_to_silence_generator;  // Number of calls where silence generated,
-                                   // and NetEq was disengaged from decoding.
-  int calls_to_neteq;              // Number of calls to NetEq.
-  int decoded_normal;  // Number of calls where audio RTP packet decoded.
-  int decoded_plc;     // Number of calls resulted in PLC.
-  int decoded_cng;  // Number of calls where comfort noise generated due to DTX.
-  int decoded_plc_cng;  // Number of calls resulted where PLC faded to CNG.
-  int decoded_muted_output;  // Number of calls returning a muted state output.
+  AudioDecodingCallStats(const AudioDecodingCallStats& other)
+  {
+    calls_to_silence_generator = other.calls_to_silence_generator.load();
+    calls_to_neteq = other.calls_to_neteq.load();
+    decoded_normal = other.decoded_normal.load();
+    decoded_plc = other.decoded_plc.load();
+    decoded_cng = other.decoded_cng.load();
+    decoded_plc_cng = other.decoded_plc_cng.load();
+    decoded_muted_output = other.decoded_muted_output.load();
+  }
+
+  AudioDecodingCallStats& operator=(const AudioDecodingCallStats& other)
+  {
+    calls_to_silence_generator = other.calls_to_silence_generator.load();
+    calls_to_neteq = other.calls_to_neteq.load();
+    decoded_normal = other.decoded_normal.load();
+    decoded_plc = other.decoded_plc.load();
+    decoded_cng = other.decoded_cng.load();
+    decoded_plc_cng = other.decoded_plc_cng.load();
+    decoded_muted_output = other.decoded_muted_output.load();
+    return *this;
+  }
+
+  std::atomic<int> calls_to_silence_generator;  // Number of calls where silence generated,
+  std::atomic<int> calls_to_neteq;              // Number of calls to NetEq.
+  std::atomic<int> decoded_normal;  // Number of calls where audio RTP packet decoded.
+  std::atomic<int> decoded_plc;     // Number of calls resulted in PLC.
+  std::atomic<int> decoded_cng;  // Number of calls where comfort noise generated due to DTX.
+  std::atomic<int> decoded_plc_cng;  // Number of calls resulted where PLC faded to CNG.
+  std::atomic<int> decoded_muted_output;  // Number of calls returning a muted state output.
 };
 
 // ==================================================================
@@ -406,6 +429,7 @@ enum { kPayloadNameSize = 32 };
 enum { kMaxSimulcastStreams = 4 };
 enum { kMaxSpatialLayers = 5 };
 enum { kMaxTemporalStreams = 4 };
+enum { kRIDSize = 32};
 
 enum VideoCodecComplexity {
   kComplexityNormal = 0,
@@ -472,12 +496,14 @@ enum Profile {
 struct VideoCodecH264 {
   bool frameDroppingOn;
   int keyFrameInterval;
+  double         scaleDownBy;
   // These are NULL/0 if not externally negotiated.
   const uint8_t* spsData;
   size_t spsLen;
   const uint8_t* ppsData;
   size_t ppsLen;
   H264::Profile profile;
+  uint8_t       packetizationMode; // 0 or 1
 };
 
 // Video codec types
@@ -513,6 +539,7 @@ struct SimulcastStream {
   unsigned int targetBitrate;  // kilobits/sec.
   unsigned int minBitrate;     // kilobits/sec.
   unsigned int qpMax;          // minimum quality
+  char         rid[kRIDSize];
 };
 
 struct SpatialLayer {
@@ -653,6 +680,26 @@ struct OverUseDetectorOptions {
   double initial_var_noise;
 };
 
+enum CPULoadState {
+  kLoadRelaxed = 0,
+  kLoadNormal,
+  kLoadStressed,
+  kLoadLast,
+};
+
+class CPULoadStateObserver {
+public:
+  virtual void onLoadStateChanged(CPULoadState aNewState) = 0;
+  virtual ~CPULoadStateObserver() {};
+};
+
+class CPULoadStateCallbackInvoker {
+public:
+    virtual void AddObserver(CPULoadStateObserver* aObserver) = 0;
+    virtual void RemoveObserver(CPULoadStateObserver* aObserver) = 0;
+    virtual ~CPULoadStateCallbackInvoker() {};
+};
+
 // This structure will have the information about when packet is actually
 // received by socket.
 struct PacketTime {
@@ -735,6 +782,17 @@ typedef StringRtpHeaderExtension StreamId;
 // Mid represents RtpMid which is a string.
 typedef StringRtpHeaderExtension Mid;
 
+// Audio level of CSRCs See:
+// https://tools.ietf.org/html/rfc6465
+struct CsrcAudioLevelList {
+  CsrcAudioLevelList() : numAudioLevels(0) { }
+  CsrcAudioLevelList(const CsrcAudioLevelList&) = default;
+  CsrcAudioLevelList& operator=(const CsrcAudioLevelList&) = default;
+  uint8_t numAudioLevels;
+  // arrOfAudioLevels has the same ordering as RTPHeader.arrOfCSRCs
+  uint8_t arrOfAudioLevels[kRtpCsrcSize];
+};
+
 struct RTPHeaderExtension {
   RTPHeaderExtension();
   RTPHeaderExtension(const RTPHeaderExtension& other);
@@ -778,6 +836,7 @@ struct RTPHeaderExtension {
   // For identifying the media section used to interpret this RTP packet. See
   // https://tools.ietf.org/html/draft-ietf-mmusic-sdp-bundle-negotiation-38
   Mid mid;
+  CsrcAudioLevelList csrcAudioLevels;
 };
 
 struct RTPHeader {

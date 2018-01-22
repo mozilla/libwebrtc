@@ -335,6 +335,7 @@ void VP8EncoderImpl::SetupTemporalLayers(int num_streams,
                                          const VideoCodec& codec) {
   RTC_DCHECK(codec.VP8().tl_factory != nullptr);
   const TemporalLayersFactory* tl_factory = codec.VP8().tl_factory;
+  RTC_DCHECK(temporal_layers_.empty());
   if (num_streams == 1) {
     temporal_layers_.emplace_back(
         tl_factory->Create(0, num_temporal_layers, tl0_pic_idx_[0]));
@@ -366,7 +367,7 @@ int VP8EncoderImpl::InitEncode(const VideoCodec* inst,
   if (inst->maxBitrate > 0 && inst->startBitrate > inst->maxBitrate) {
     return WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
   }
-  if (inst->width <= 1 || inst->height <= 1) {
+  if (inst->width < 1 || inst->height < 1) {
     return WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
   }
   if (number_of_cores < 1) {
@@ -540,7 +541,13 @@ int VP8EncoderImpl::InitEncode(const VideoCodec* inst,
 
   configurations_[0].rc_target_bitrate = stream_bitrates[stream_idx];
   temporal_layers_[stream_idx]->OnRatesUpdated(
-      stream_bitrates[stream_idx], inst->maxBitrate, inst->maxFramerate);
+    // VP8 fails to init a setup with temporal layers if
+    // ts_target_bitrates[] are 0, so we need to supply enough bits to
+    // ensure it configures.  After that, normal bitrate updates should
+    // work as designed, with the largest simulcast stream getting starved
+    // if they're aren't enough bits.
+    stream_bitrates[stream_idx] > 0 ? stream_bitrates[stream_idx] : inst->simulcastStream[stream_idx].minBitrate,
+    inst->maxBitrate, inst->maxFramerate);
   temporal_layers_[stream_idx]->UpdateConfiguration(&configurations_[0]);
   --stream_idx;
   for (size_t i = 1; i < encoders_.size(); ++i, --stream_idx) {
@@ -562,7 +569,9 @@ int VP8EncoderImpl::InitEncode(const VideoCodec* inst,
     SetStreamState(stream_bitrates[stream_idx] > 0, stream_idx);
     configurations_[i].rc_target_bitrate = stream_bitrates[stream_idx];
     temporal_layers_[stream_idx]->OnRatesUpdated(
-        stream_bitrates[stream_idx], inst->maxBitrate, inst->maxFramerate);
+      // here too - VP8 won't init if it thinks temporal layers have no bits
+      stream_bitrates[stream_idx] > 0 ? stream_bitrates[stream_idx] : inst->simulcastStream[stream_idx].minBitrate,
+      inst->maxBitrate, inst->maxFramerate);
     temporal_layers_[stream_idx]->UpdateConfiguration(&configurations_[i]);
   }
 

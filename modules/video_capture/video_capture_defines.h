@@ -15,6 +15,10 @@
 #include "modules/include/module_common_types.h"
 #include "typedefs.h"  // NOLINT(build/include)
 
+#ifdef XP_WIN
+typedef int pid_t;
+#endif
+
 namespace webrtc
 {
 // Defines
@@ -76,6 +80,19 @@ public:
                                   int64_t captureTime = 0) = 0;
 protected:
     ~VideoCaptureExternal() {}
+};
+
+
+// Callback class to be implemented by module user
+class VideoCaptureDataCallback
+{
+public:
+    virtual void OnIncomingCapturedFrame(const int32_t id,
+                                         const VideoFrame& videoFrame) = 0;
+    virtual void OnCaptureDelayChanged(const int32_t id,
+                                       const int32_t delay) = 0;
+protected:
+    virtual ~VideoCaptureDataCallback(){}
 };
 
 }  // namespace webrtc

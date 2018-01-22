@@ -21,12 +21,14 @@
 #include "rtc_base/constructormagic.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/win32.h"
+#include <VersionHelpers.h>
 
 namespace webrtc {
 
 namespace {
 
 BOOL CALLBACK WindowsEnumerationHandler(HWND hwnd, LPARAM param) {
+  assert(IsGUIThread(false));
   DesktopCapturer::SourceList* list =
       reinterpret_cast<DesktopCapturer::SourceList*>(param);
 
@@ -65,6 +67,10 @@ BOOL CALLBACK WindowsEnumerationHandler(HWND hwnd, LPARAM param) {
 
   DesktopCapturer::Source window;
   window.id = reinterpret_cast<WindowId>(hwnd);
+
+  DWORD pid;
+  GetWindowThreadProcessId(hwnd, &pid);
+  window.pid = (pid_t)pid;
 
   const size_t kTitleLength = 500;
   WCHAR window_title[kTitleLength];
@@ -146,6 +152,7 @@ WindowCapturerWin::WindowCapturerWin() {}
 WindowCapturerWin::~WindowCapturerWin() {}
 
 bool WindowCapturerWin::GetSourceList(SourceList* sources) {
+  assert(IsGUIThread(false));
   SourceList result;
   LPARAM param = reinterpret_cast<LPARAM>(&result);
   // EnumWindows only enumerates root windows.
@@ -164,6 +171,7 @@ bool WindowCapturerWin::GetSourceList(SourceList* sources) {
 }
 
 bool WindowCapturerWin::SelectSource(SourceId id) {
+  assert(IsGUIThread(false));
   HWND window = reinterpret_cast<HWND>(id);
   if (!IsWindow(window) || !IsWindowVisible(window) || IsIconic(window))
     return false;
@@ -175,6 +183,7 @@ bool WindowCapturerWin::SelectSource(SourceId id) {
 }
 
 bool WindowCapturerWin::FocusOnSelectedSource() {
+  assert(IsGUIThread(false));
   if (!window_)
     return false;
 
@@ -199,6 +208,7 @@ void WindowCapturerWin::Start(Callback* callback) {
 }
 
 void WindowCapturerWin::CaptureFrame() {
+  assert(IsGUIThread(false));
   if (!window_) {
     RTC_LOG(LS_ERROR) << "Window hasn't been selected: " << GetLastError();
     callback_->OnCaptureResult(Result::ERROR_PERMANENT, nullptr);

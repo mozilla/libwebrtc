@@ -166,7 +166,7 @@ bool IsDesktopElement(XAtomCache* cache, ::Window window) {
 
 int32_t GetWindowState(XAtomCache* cache, ::Window window) {
   // Get WM_STATE property of the window.
-  XWindowProperty<uint32_t> window_state(
+  webrtc::XWindowProperty<uint32_t> window_state(
       cache->display(), window, cache->WmState());
 
   // WM_STATE is considered to be set to WithdrawnState when it missing.

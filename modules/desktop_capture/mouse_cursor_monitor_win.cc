@@ -24,6 +24,8 @@
 #include "modules/desktop_capture/win/window_capture_utils.h"
 #include "rtc_base/logging.h"
 
+#include <windows.h>
+
 namespace webrtc {
 
 namespace {
@@ -91,6 +93,7 @@ MouseCursorMonitorWin::~MouseCursorMonitorWin() {
 void MouseCursorMonitorWin::Init(Callback* callback, Mode mode) {
   assert(!callback_);
   assert(callback);
+  assert(IsGUIThread(false));
 
   callback_ = callback;
   mode_ = mode;
@@ -99,6 +102,7 @@ void MouseCursorMonitorWin::Init(Callback* callback, Mode mode) {
 }
 
 void MouseCursorMonitorWin::Capture() {
+  assert(IsGUIThread(false));
   assert(callback_);
 
   CURSORINFO cursor_info;
@@ -110,7 +114,8 @@ void MouseCursorMonitorWin::Capture() {
   }
 
   if (!IsSameCursorShape(cursor_info, last_cursor_)) {
-    if (cursor_info.flags == CURSOR_SUPPRESSED) {
+    // Mozilla - CURSOR_SUPPRESSED is win8 and above; so we seem not to be able to see the symbol
+    if (cursor_info.flags != CURSOR_SHOWING) {
       // The cursor is intentionally hidden now, send an empty bitmap.
       last_cursor_ = cursor_info;
       callback_->OnMouseCursor(new MouseCursor(
@@ -171,6 +176,7 @@ void MouseCursorMonitorWin::Capture() {
 }
 
 DesktopRect MouseCursorMonitorWin::GetScreenRect() {
+  assert(IsGUIThread(false));
   assert(screen_ != kInvalidScreenId);
   if (screen_ == kFullDesktopScreenId) {
     return DesktopRect::MakeXYWH(

@@ -193,6 +193,9 @@ class VideoSendStream {
 
       // RTCP CNAME, see RFC 3550.
       std::string c_name;
+
+      std::vector<std::string> rids;
+      std::string mid;
     } rtp;
 
     // Transport for outgoing packets.

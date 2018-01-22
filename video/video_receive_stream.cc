@@ -458,5 +458,11 @@ bool VideoReceiveStream::Decode() {
   }
   return true;
 }
+
+bool
+VideoReceiveStream::GetRemoteRTCPSenderInfo(RTCPSenderInfo* sender_info) const {
+  return -1 != rtp_stream_receiver_.rtp_rtcp()->RemoteRTCPStat(sender_info);
+}
+
 }  // namespace internal
 }  // namespace webrtc

@@ -801,6 +801,11 @@ VideoSendStreamImpl::VideoSendStreamImpl(
   ConfigureProtection();
   ConfigureSsrcs();
 
+  // Configure the mid for each of the rtp modules
+  for (RtpRtcp* rtp_rtcp : rtp_rtcp_modules_) {
+    rtp_rtcp->SetMID(config_->rtp.mid.c_str());
+  }
+
   // TODO(pbos): Should we set CNAME on all RTP modules?
   rtp_rtcp_modules_.front()->SetCNAME(config_->rtp.c_name.c_str());
 
@@ -1116,10 +1121,19 @@ void VideoSendStreamImpl::ConfigureProtection() {
 void VideoSendStreamImpl::ConfigureSsrcs() {
   RTC_DCHECK_RUN_ON(worker_queue_);
   // Configure regular SSRCs.
+  bool has_rids = false;
+  if (config_->rtp.rids.size() != 0) {
+    has_rids = true;
+    // if we have rids, we must have a rid entry for every ssrc (even if it's "")
+    RTC_DCHECK(config_->rtp.rids.size() == config_->rtp.ssrcs.size());
+  }
   for (size_t i = 0; i < config_->rtp.ssrcs.size(); ++i) {
     uint32_t ssrc = config_->rtp.ssrcs[i];
     RtpRtcp* const rtp_rtcp = rtp_rtcp_modules_[i];
     rtp_rtcp->SetSSRC(ssrc);
+    if (has_rids && config_->rtp.rids[i] != "") {
+      rtp_rtcp->SetRID(config_->rtp.rids[i].c_str());
+    }
 
     // Restore RTP state if previous existed.
     VideoSendStream::RtpStateMap::iterator it = suspended_ssrcs_.find(ssrc);

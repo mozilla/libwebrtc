@@ -16,6 +16,12 @@
 
 #include "rtc_base/checks.h"
 
+namespace mozilla {
+namespace jni {
+jclass GetClassRef(JNIEnv* aEnv, const char* aClassName);
+}
+}
+
 #define TAG "JVM"
 #define ALOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
 #define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
@@ -42,14 +48,11 @@ struct {
 void LoadClasses(JNIEnv* jni) {
   ALOGD("LoadClasses");
   for (auto& c : loaded_classes) {
-    jclass localRef = FindClass(jni, c.name);
     ALOGD("name: %s", c.name);
-    CHECK_EXCEPTION(jni) << "Error during FindClass: " << c.name;
-    RTC_CHECK(localRef) << c.name;
-    jclass globalRef = reinterpret_cast<jclass>(jni->NewGlobalRef(localRef));
-    CHECK_EXCEPTION(jni) << "Error during NewGlobalRef: " << c.name;
-    RTC_CHECK(globalRef) << c.name;
-    c.clazz = globalRef;
+    jclass clsRef = mozilla::jni::GetClassRef(jni, c.name);
+    RTC_CHECK(clsRef) << c.name;
+    c.clazz = static_cast<jclass>(jni->NewGlobalRef(clsRef));
+    jni->DeleteLocalRef(clsRef);
   }
 }
 
@@ -219,7 +222,9 @@ std::string JNIEnvironment::JavaToStdString(const jstring& j_string) {
 // static
 void JVM::Initialize(JavaVM* jvm) {
   ALOGD("JVM::Initialize%s", GetThreadInfo().c_str());
-  RTC_CHECK(!g_jvm);
+  if (g_jvm) {
+    return;
+  }
   g_jvm = new JVM(jvm);
 }
 
