@@ -11,6 +11,9 @@
 #ifndef MODULES_DESKTOP_CAPTURE_DESKTOP_CAPTURE_TYPES_H_
 #define MODULES_DESKTOP_CAPTURE_DESKTOP_CAPTURE_TYPES_H_
 
+#ifndef XP_WIN
+#include <sys/types.h> // pid_t
+#endif
 #include <stdint.h>
 
 namespace webrtc {
@@ -42,6 +45,13 @@ const WindowId kNullWindowId = 0;
 const ScreenId kFullDesktopScreenId = -1;
 
 const ScreenId kInvalidScreenId = -2;
+
+typedef intptr_t ProcessId;
+const ProcessId DesktopProcessId = 0;
+
+#ifdef XP_WIN
+typedef int pid_t;
+#endif
 
 // Integers to attach to each DesktopFrame to differentiate the generator of
 // the frame. The entries in this namespace should remain in sync with the
