@@ -202,6 +202,8 @@ class VideoReceiveStreamInterface : public MediaReceiveStreamInterface {
       // disabled.
       KeyFrameReqMethod keyframe_method = KeyFrameReqMethod::kPliRtcp;
 
+      bool tmmbr = false;
+
       // See LntfConfig for description.
       LntfConfig lntf;
 
