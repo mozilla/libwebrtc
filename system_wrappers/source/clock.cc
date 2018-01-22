@@ -207,6 +207,7 @@ class WindowsRealTimeClock : public RealTimeClock {
 };
 
 #elif defined(WEBRTC_POSIX)
+
 class UnixRealTimeClock : public RealTimeClock {
  public:
   UnixRealTimeClock() {}

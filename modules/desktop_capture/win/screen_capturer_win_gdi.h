@@ -45,6 +45,7 @@ class ScreenCapturerWinGdi : public DesktopCapturer {
 
  private:
   typedef HRESULT(WINAPI* DwmEnableCompositionFunc)(UINT);
+  typedef HRESULT(WINAPI* DwmIsCompositionEnabledFunc)(BOOL*);
 
   // Make sure that the device contexts match the screen configuration.
   void PrepareCaptureResources();
@@ -74,6 +75,7 @@ class ScreenCapturerWinGdi : public DesktopCapturer {
 
   HMODULE dwmapi_library_ = NULL;
   DwmEnableCompositionFunc composition_func_ = nullptr;
+  DwmIsCompositionEnabledFunc composition_enabled_func_;
 
   RTC_DISALLOW_COPY_AND_ASSIGN(ScreenCapturerWinGdi);
 };

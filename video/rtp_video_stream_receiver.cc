@@ -299,6 +299,7 @@ RtpVideoStreamReceiver::RtpVideoStreamReceiver(
     rtp_receive_statistics_->SetMaxReorderingThreshold(
         config_.rtp.rtx_ssrc, max_reordering_threshold);
   }
+
   if (config_.rtp.rtcp_xr.receiver_reference_time_report)
     rtp_rtcp_->SetRtcpXrRrtrStatus(true);
 

@@ -348,6 +348,8 @@ struct RTC_EXPORT RtpExtension {
       "urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id";
   static constexpr char kRepairedRidUri[] =
       "urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id";
+  static constexpr char kCsrcAudioLevelUri[] =
+      "urn:ietf:params:rtp-hdrext:csrc-audio-level";
 
   // Inclusive min and max IDs for two-byte header extensions and one-byte
   // header extensions, per RFC8285 Section 4.2-4.3.

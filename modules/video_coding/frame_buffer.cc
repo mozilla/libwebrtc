@@ -98,6 +98,8 @@ VCMFrameBufferEnum VCMFrameBuffer::InsertPacket(const VCMPacket& packet,
     }
   }
 
+  // add safety margin because STAP-A packets can cause it to expand by
+  // ~two bytes per NAL
   uint32_t requiredSizeBytes =
       size() + packet.sizeBytes +
       (packet.insertStartCode ? kH264StartCodeLengthBytes : 0);

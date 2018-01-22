@@ -204,6 +204,10 @@ BOOL CALLBACK FilterUncapturableWindows(HWND hwnd, LPARAM param) {
   DesktopCapturer::Source window;
   window.id = reinterpret_cast<WindowId>(hwnd);
 
+  DWORD pid;
+  GetWindowThreadProcessId(hwd, &pid);
+  window.pid = static_cast<pid_t>(pid);
+
   // Truncate the title if it's longer than 500 characters.
   WCHAR window_title[500];
   GetWindowTextW(hwnd, window_title, arraysize(window_title));

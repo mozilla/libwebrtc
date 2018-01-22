@@ -35,7 +35,8 @@ enum class ConfigOptionID {
   kIntelligibility,           // Deprecated
   kEchoCanceller3,            // Deprecated
   kAecRefinedAdaptiveFilter,  // Deprecated
-  kLevelControl               // Deprecated
+  kLevelControl,              // Deprecated
+  kCaptureDeviceInfo
 };
 
 // Class Config is designed to ease passing a set of options across webrtc code.

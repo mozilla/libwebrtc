@@ -199,6 +199,8 @@ class VideoReceiveStream {
       // See draft-holmer-rmcat-transport-wide-cc-extensions for details.
       bool transport_cc = false;
 
+      bool tmmbr = false;
+
       // See LntfConfig for description.
       LntfConfig lntf;
 

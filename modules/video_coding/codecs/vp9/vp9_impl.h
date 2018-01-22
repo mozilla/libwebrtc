@@ -61,6 +61,9 @@ class VP9EncoderImpl : public VP9Encoder {
   // Call encoder initialize function and set control settings.
   int InitAndSetControlSettings(const VideoCodec* inst);
 
+  // Update frame size for codec.
+  int UpdateCodecFrameSize(const VideoFrame& input_image);
+
   void PopulateCodecSpecific(CodecSpecificInfo* codec_specific,
                              absl::optional<int>* spatial_idx,
                              const vpx_codec_cx_pkt& pkt,
@@ -133,6 +136,7 @@ class VP9EncoderImpl : public VP9Encoder {
   VideoBitrateAllocation current_bitrate_allocation_;
   bool ss_info_needed_;
   bool force_all_active_layers_;
+  uint8_t num_cores_;
 
   std::vector<FramerateController> framerate_controller_;
 

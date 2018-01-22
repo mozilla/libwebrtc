@@ -252,6 +252,7 @@ VP9EncoderImpl::VP9EncoderImpl(const cricket::VideoCodec& codec)
       first_frame_in_picture_(true),
       ss_info_needed_(false),
       force_all_active_layers_(false),
+      num_cores_(0),
       is_flexible_mode_(false),
       variable_framerate_experiment_(ParseVariableFramerateConfig(
           "WebRTC-VP9VariableFramerateScreenshare")),
@@ -497,7 +498,7 @@ int VP9EncoderImpl::InitEncode(const VideoCodec* inst,
 
   force_key_frame_ = true;
   pics_since_key_ = 0;
-
+  num_cores_ = settings.number_of_cores;
   num_spatial_layers_ = inst->VP9().numberOfSpatialLayers;
   RTC_DCHECK_GT(num_spatial_layers_, 0);
   num_temporal_layers_ = inst->VP9().numberOfTemporalLayers;

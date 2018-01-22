@@ -25,7 +25,8 @@ class RtpHeaderParserImpl : public RtpHeaderParser {
 
   bool Parse(const uint8_t* packet,
              size_t length,
-             RTPHeader* header) const override;
+             RTPHeader* header,
+             bool secured) const override;
 
   bool RegisterRtpHeaderExtension(RTPExtensionType type, uint8_t id) override;
   bool RegisterRtpHeaderExtension(RtpExtension extension) override;
@@ -61,7 +62,8 @@ absl::optional<uint32_t> RtpHeaderParser::GetSsrc(const uint8_t* packet,
 
 bool RtpHeaderParserImpl::Parse(const uint8_t* packet,
                                 size_t length,
-                                RTPHeader* header) const {
+                                RTPHeader* header,
+                                bool secured) const {
   RtpUtility::RtpHeaderParser rtp_parser(packet, length);
   *header = RTPHeader();
 
@@ -71,7 +73,7 @@ bool RtpHeaderParserImpl::Parse(const uint8_t* packet,
     map = rtp_header_extension_map_;
   }
 
-  const bool valid_rtpheader = rtp_parser.Parse(header, &map);
+  const bool valid_rtpheader = rtp_parser.Parse(header, &map, secured);
   if (!valid_rtpheader) {
     return false;
   }

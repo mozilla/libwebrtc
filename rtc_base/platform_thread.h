@@ -57,7 +57,7 @@ class PlatformThread {
 
   // Spawns a thread and tries to set thread priority according to the priority
   // from when CreateThread was called.
-  void Start();
+  virtual void Start();
 
   bool IsRunning() const;
 
@@ -66,16 +66,16 @@ class PlatformThread {
   PlatformThreadRef GetThreadRef() const;
 
   // Stops (joins) the spawned thread.
-  void Stop();
+  virtual void Stop();
 
  protected:
 #if defined(WEBRTC_WIN)
   // Exposed to derived classes to allow for special cases specific to Windows.
   bool QueueAPC(PAPCFUNC apc_function, ULONG_PTR data);
 #endif
+  virtual void Run();
 
  private:
-  void Run();
   bool SetPriority(ThreadPriority priority);
 
   ThreadRunFunction const run_function_ = nullptr;
@@ -91,6 +91,7 @@ class PlatformThread {
 
   HANDLE thread_ = nullptr;
   DWORD thread_id_ = 0;
+  CriticalSection cs_;
 #else
   static void* StartThread(void* param);
 

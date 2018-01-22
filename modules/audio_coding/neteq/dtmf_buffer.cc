@@ -193,7 +193,11 @@ bool DtmfBuffer::Empty() const {
 }
 
 int DtmfBuffer::SetSampleRate(int fs_hz) {
-  if (fs_hz != 8000 && fs_hz != 16000 && fs_hz != 32000 && fs_hz != 48000) {
+  if (fs_hz != 8000 &&
+      fs_hz != 16000 &&
+      fs_hz != 32000 &&
+      fs_hz != 44100 &&
+      fs_hz != 48000) {
     return kInvalidSampleRate;
   }
   max_extrapolation_samples_ = 7 * fs_hz / 100;

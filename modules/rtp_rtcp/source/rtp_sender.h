@@ -74,6 +74,9 @@ class RTPSender {
   void SetExtmapAllowMixed(bool extmap_allow_mixed)
       RTC_LOCKS_EXCLUDED(send_mutex_);
 
+  int32_t SetRID(const char* rid);
+  int32_t SetMId(const char* mid);
+
   // RTP header extension
   int32_t RegisterRtpHeaderExtension(RTPExtensionType type, uint8_t id)
       RTC_LOCKS_EXCLUDED(send_mutex_);

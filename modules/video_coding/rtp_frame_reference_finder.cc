@@ -540,6 +540,13 @@ RtpFrameReferenceFinder::FrameDecision RtpFrameReferenceFinder::ManageFrameVp9(
 
     if (frame->frame_type() == VideoFrameType::kVideoFrameKey) {
       frame->num_references = 0;
+
+      auto gof_info_it = gof_info_.find(codec_header.tl0_pic_idx);
+      if (gof_info_it == gof_info_.end())
+        return kDrop;
+
+      info = &gof_info_it->second;
+
       FrameReceivedVp9(frame->id.picture_id, info);
       UnwrapPictureIds(frame);
       return kHandOff;

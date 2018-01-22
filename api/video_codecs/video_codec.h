@@ -81,7 +81,9 @@ struct VideoCodecH264 {
   }
   bool frameDroppingOn;
   int keyFrameInterval;
+  double scaleDownBy;
   uint8_t numberOfTemporalLayers;
+  uint8_t packetizationMode; // 0 or 1
 };
 
 // Translates from name of codec to codec type and vice versa.
