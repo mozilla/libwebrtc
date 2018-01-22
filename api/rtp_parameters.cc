@@ -151,7 +151,8 @@ bool RtpExtension::IsSupportedForAudio(absl::string_view uri) {
          uri == webrtc::RtpExtension::kTransportSequenceNumberV2Uri ||
          uri == webrtc::RtpExtension::kMidUri ||
          uri == webrtc::RtpExtension::kRidUri ||
-         uri == webrtc::RtpExtension::kRepairedRidUri;
+         uri == webrtc::RtpExtension::kRepairedRidUri ||
+         uri == webrtc::RtpExtension::kCsrcAudioLevelsUri;
 }
 
 bool RtpExtension::IsSupportedForVideo(absl::string_view uri) {
