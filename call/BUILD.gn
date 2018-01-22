@@ -21,6 +21,7 @@ rtc_library("call_interfaces") {
     "audio_receive_stream.cc",
     "audio_receive_stream.h",
     "audio_send_stream.h",
+    "audio_send_stream_call.cc",
     "audio_state.cc",
     "audio_state.h",
     "call.h",
@@ -32,9 +33,6 @@ rtc_library("call_interfaces") {
     "syncable.cc",
     "syncable.h",
   ]
-  if (!build_with_mozilla) {
-    sources += [ "audio_send_stream.cc" ]
-  }
 
   deps = [
     ":audio_sender_interface",

@@ -41,7 +41,7 @@ namespace webrtc {
 // Functor used to use as a custom deleter in the map of file pointers to raw
 // files.
 struct RawFileCloseFunctor {
-  void operator()(FILE* f) const { fclose(f); }
+  void operator()(FILE* f) const { if (f) fclose(f); }
 };
 #endif
 
@@ -100,6 +100,7 @@ class ApmDataDumper {
   void InitiateNewSetOfRecordings() {
 #if WEBRTC_APM_DEBUG_DUMP == 1
     ++recording_set_index_;
+    debug_written_ = 0;
 #endif
   }
 
@@ -114,7 +115,9 @@ class ApmDataDumper {
 
     if (recording_activated_) {
       FILE* file = GetRawFile(name);
-      fwrite(&v, sizeof(v), 1, file);
+      if (file) {
+        fwrite(&v, sizeof(v), 1, file);
+      }
     }
 #endif
   }
@@ -129,7 +132,9 @@ class ApmDataDumper {
 
     if (recording_activated_) {
       FILE* file = GetRawFile(name);
-      fwrite(v, sizeof(v[0]), v_length, file);
+      if (file) {
+        fwrite(v, sizeof(v[0]), v_length, file);
+      }
     }
 #endif
   }
@@ -156,7 +161,9 @@ class ApmDataDumper {
 
     if (recording_activated_) {
       FILE* file = GetRawFile(name);
-      fwrite(&v, sizeof(v), 1, file);
+      if (file) {
+        fwrite(&v, sizeof(v), 1, file);
+      }
     }
 #endif
   }
@@ -171,7 +178,9 @@ class ApmDataDumper {
 
     if (recording_activated_) {
       FILE* file = GetRawFile(name);
-      fwrite(v, sizeof(v[0]), v_length, file);
+      if (file) {
+        fwrite(v, sizeof(v[0]), v_length, file);
+      }
     }
 #endif
   }
@@ -210,9 +219,11 @@ class ApmDataDumper {
 
     if (recording_activated_) {
       FILE* file = GetRawFile(name);
-      for (size_t k = 0; k < v_length; ++k) {
-        int16_t value = static_cast<int16_t>(v[k]);
-        fwrite(&value, sizeof(value), 1, file);
+      if (file) {
+        for (size_t k = 0; k < v_length; ++k) {
+          int16_t value = static_cast<int16_t>(v[k]);
+          fwrite(&value, sizeof(value), 1, file);
+        }
       }
     }
 #endif
@@ -240,7 +251,9 @@ class ApmDataDumper {
 
     if (recording_activated_) {
       FILE* file = GetRawFile(name);
-      fwrite(&v, sizeof(v), 1, file);
+      if (file) {
+        fwrite(&v, sizeof(v), 1, file);
+      }
     }
 #endif
   }
@@ -255,7 +268,9 @@ class ApmDataDumper {
 
     if (recording_activated_) {
       FILE* file = GetRawFile(name);
-      fwrite(v, sizeof(v[0]), v_length, file);
+      if (file) {
+        fwrite(v, sizeof(v[0]), v_length, file);
+      }
     }
 #endif
   }
@@ -282,7 +297,9 @@ class ApmDataDumper {
 
     if (recording_activated_) {
       FILE* file = GetRawFile(name);
-      fwrite(&v, sizeof(v), 1, file);
+      if (file) {
+        fwrite(&v, sizeof(v), 1, file);
+      }
     }
 #endif
   }
@@ -297,7 +314,9 @@ class ApmDataDumper {
 
     if (recording_activated_) {
       FILE* file = GetRawFile(name);
-      fwrite(v, sizeof(v[0]), v_length, file);
+      if (file) {
+        fwrite(v, sizeof(v[0]), v_length, file);
+      }
     }
 #endif
   }
@@ -311,7 +330,9 @@ class ApmDataDumper {
 
     if (recording_activated_) {
       FILE* file = GetRawFile(name);
-      fwrite(&v, sizeof(v), 1, file);
+      if (file) {
+        fwrite(&v, sizeof(v), 1, file);
+      }
     }
 #endif
   }
@@ -326,7 +347,9 @@ class ApmDataDumper {
 
     if (recording_activated_) {
       FILE* file = GetRawFile(name);
-      fwrite(v, sizeof(v[0]), v_length, file);
+      if (file) {
+        fwrite(v, sizeof(v[0]), v_length, file);
+      }
     }
 #endif
   }
@@ -369,6 +392,12 @@ class ApmDataDumper {
       WavWriter* file = GetWavFile(name, sample_rate_hz, num_channels,
                                    WavFile::SampleFormat::kFloat);
       file->WriteSamples(v, v_length);
+      // Cheat and use aec_near as a stand-in for "size of the largest file"
+      // in the dump.  We're looking to limit the total time, and that's a
+      // reasonable stand-in.
+      if (strcmp(name, "aec_near") == 0) {
+       updateDebugWritten(v_length * sizeof(float));
+      }
     }
 #endif
   }
@@ -405,6 +434,16 @@ class ApmDataDumper {
                         int sample_rate_hz,
                         int num_channels,
                         WavFile::SampleFormat format);
+
+  uint32_t debug_written_ = 0;
+
+  void updateDebugWritten(uint32_t amount) {
+    debug_written_ += amount;
+    if (debug_written_ >= webrtc::Trace::aec_debug_size()) {
+      SetActivated(false);
+    }
+  }
+
 #endif
 };
 
