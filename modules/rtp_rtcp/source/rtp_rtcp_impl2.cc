@@ -505,6 +505,11 @@ void ModuleRtpRtcpImpl2::GetSendStreamDataCounters(
 }
 
 // Received RTCP report.
+void ModuleRtpRtcpImpl2::RemoteRTCPSenderInfo(uint32_t* packet_count,
+                                              uint32_t* octet_count) const {
+  return rtcp_receiver_.RemoteRTCPSenderInfo(packet_count, octet_count);
+}
+
 std::vector<ReportBlockData> ModuleRtpRtcpImpl2::GetLatestReportBlockData()
     const {
   return rtcp_receiver_.GetLatestReportBlockData();
