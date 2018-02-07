@@ -174,6 +174,8 @@ RTCPReceiver::RTCPReceiver(const RtpRtcpInterface::Configuration& config,
       // TODO(bugs.webrtc.org/10774): Remove fallback.
       remote_ssrc_(0),
       remote_sender_rtp_time_(0),
+      remote_sender_packet_count_(0),
+      remote_sender_octet_count_(0),
       xr_rrtr_status_(false),
       xr_rr_rtt_ms_(0),
       oldest_tmmbr_info_ms_(0),
@@ -397,6 +399,13 @@ std::vector<ReportBlockData> RTCPReceiver::GetLatestReportBlockData() const {
   return result;
 }
 
+void RTCPReceiver::RemoteRTCPSenderInfo(uint32_t* packet_count,
+                                        uint32_t* octet_count) const {
+  MutexLock lock(&rtcp_receiver_lock_);
+  *packet_count = remote_sender_packet_count_;
+  *octet_count = remote_sender_octet_count_;
+}
+
 bool RTCPReceiver::ParseCompoundPacket(rtc::ArrayView<const uint8_t> packet,
                                        PacketInformation* packet_information) {
   MutexLock lock(&rtcp_receiver_lock_);
@@ -524,6 +533,8 @@ void RTCPReceiver::HandleSenderReport(const CommonHeader& rtcp_block,
     remote_sender_ntp_time_ = sender_report.ntp();
     remote_sender_rtp_time_ = sender_report.rtp_timestamp();
     last_received_sr_ntp_ = TimeMicrosToNtp(clock_->TimeInMicroseconds());
+    remote_sender_packet_count_ = sender_report.sender_packet_count();
+    remote_sender_octet_count_ = sender_report.sender_octet_count();
   } else {
     // We will only store the send report from one source, but
     // we will store all the receive blocks.

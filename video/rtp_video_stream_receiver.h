@@ -120,6 +120,8 @@ class RtpVideoStreamReceiver : public LossNotificationSender,
                        const std::map<std::string, std::string>& codec_params,
                        bool raw_payload);
 
+  RtpRtcp* rtp_rtcp() const { return rtp_rtcp_.get(); }
+
   void StartReceive();
   void StopReceive();
 

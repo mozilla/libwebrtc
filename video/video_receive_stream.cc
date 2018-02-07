@@ -440,6 +440,8 @@ void VideoReceiveStream::Stop() {
 VideoReceiveStream::Stats VideoReceiveStream::GetStats() const {
   VideoReceiveStream::Stats stats = stats_proxy_.GetStats();
   stats.total_bitrate_bps = 0;
+  stats.rtcp_sender_packets_sent = 0;
+  stats.rtcp_sender_octets_sent = 0;
   StreamStatistician* statistician =
       rtp_receive_statistics_->GetStatistician(stats.ssrc);
   if (statistician) {
@@ -452,6 +454,13 @@ VideoReceiveStream::Stats VideoReceiveStream::GetStats() const {
     if (rtx_statistician)
       stats.total_bitrate_bps += rtx_statistician->BitrateReceived();
   }
+  stats.rtcp_sender_octets_sent = 0;
+  RtpRtcp* rtp_rtcp = rtp_video_stream_receiver_.rtp_rtcp();
+  if (rtp_rtcp) {
+    rtp_rtcp->RemoteRTCPSenderInfo(&stats.rtcp_sender_packets_sent,
+                                   &stats.rtcp_sender_octets_sent);
+  }
+
   return stats;
 }
 
@@ -791,6 +800,5 @@ void VideoReceiveStream::GenerateKeyFrame() {
     keyframe_generation_requested_ = true;
   });
 }
-
 }  // namespace internal
 }  // namespace webrtc
