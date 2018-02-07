@@ -129,6 +129,10 @@ class RTCPReceiver final {
 
   std::vector<rtcp::ReceiveTimeInfo> ConsumeReceivedXrReferenceTimeInfo();
 
+  // Get received sender packet and octet counts
+  void RemoteRTCPSenderInfo(uint32_t* packet_count,
+                            uint32_t* octet_count) const;
+
   // Get rtt.
   int32_t RTT(uint32_t remote_ssrc,
               int64_t* last_rtt_ms,
