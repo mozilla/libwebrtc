@@ -147,6 +147,9 @@ class VideoReceiveStreamInterface : public MediaReceiveStreamInterface {
     RtcpPacketTypeCounter rtcp_packet_type_counts;
     absl::optional<RtpReceiveStats> rtx_rtp_stats;
 
+    uint32_t rtcp_sender_packets_sent;
+    uint32_t rtcp_sender_octets_sent;
+
     // Timing frame info: all important timestamps for a full lifetime of a
     // single 'timing frame'.
     absl::optional<webrtc::TimingFrameInfo> timing_frame_info;
