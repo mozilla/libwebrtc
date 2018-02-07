@@ -30,6 +30,10 @@ class RtpRtcp : public RtpRtcpInterface {
   static std::unique_ptr<RtpRtcp> DEPRECATED_Create(
       const Configuration& configuration);
 
+  // Returns packet count and octet count from RTCP sender report.
+  virtual void RemoteRTCPSenderInfo(uint32_t* packet_count,
+                                    uint32_t* octet_count) const = 0;
+
   // Requests new key frame.
   // using PLI, https://tools.ietf.org/html/rfc4585#section-6.3.1.1
   void SendPictureLossIndication() { SendRTCP(kRtcpPli); }
