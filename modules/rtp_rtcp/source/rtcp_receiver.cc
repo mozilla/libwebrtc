@@ -392,6 +392,13 @@ RTCPReceiver::ConsumeReceivedXrReferenceTimeInfo() {
   return last_xr_rtis;
 }
 
+void RTCPReceiver::RemoteRTCPSenderInfo(uint32_t* packet_count,
+                                        uint32_t* octet_count) const {
+  MutexLock lock(&rtcp_receiver_lock_);
+  *packet_count = remote_sender_packet_count_;
+  *octet_count = remote_sender_octet_count_;
+}
+
 std::vector<ReportBlockData> RTCPReceiver::GetLatestReportBlockData() const {
   std::vector<ReportBlockData> result;
   MutexLock lock(&rtcp_receiver_lock_);
