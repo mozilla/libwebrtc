@@ -1650,6 +1650,9 @@ int Channel::GetRTPStatistics(CallStatistics& stats) {
   stats.bytesReceived = bytesReceived;
   stats.packetsReceived = packetsReceived;
 
+  _rtpRtcpModule->RemoteRTCPSenderInfo(&stats.rtcp_sender_packets_sent,
+                                       &stats.rtcp_sender_octets_sent);
+
   // --- Timestamps
   {
     rtc::CritScope lock(&ts_stats_lock_);
