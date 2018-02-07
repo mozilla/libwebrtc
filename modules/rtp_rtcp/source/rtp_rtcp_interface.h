@@ -393,6 +393,10 @@ class RtpRtcpInterface : public RtcpFeedbackSenderInterface {
       StreamDataCounters* rtp_counters,
       StreamDataCounters* rtx_counters) const = 0;
 
+
+  // Returns packet count and octet count from RTCP sender report.
+  virtual void RemoteRTCPSenderInfo(uint32_t* packet_count,
+                                    uint32_t* octet_count) const = 0;
   // A snapshot of Report Blocks with additional data of interest to statistics.
   // Within this list, the sender-source SSRC pair is unique and per-pair the
   // ReportBlockData represents the latest Report Block that was received for
