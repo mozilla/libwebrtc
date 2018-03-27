@@ -285,13 +285,17 @@ RtpPacketSinkInterface* RtpDemuxer::ResolveSink(
   // RSID and RRID are routed to the same sinks. If an RSID is specified on a
   // repair packet, it should be ignored and the RRID should be used.
   std::string packet_mid, packet_rsid;
-  bool has_mid = use_mid_ && packet.GetExtension<RtpMid>(&packet_mid);
+  //bool has_mid = use_mid_ && packet.GetExtension<RtpMid>(&packet_mid);
   bool has_rsid = packet.GetExtension<RepairedRtpStreamId>(&packet_rsid);
   if (!has_rsid) {
     has_rsid = packet.GetExtension<RtpStreamId>(&packet_rsid);
   }
   uint32_t ssrc = packet.Ssrc();
 
+  // Mid support is half-baked in branch 64. RtpStreamReceiverController only
+  // supports adding sinks by ssrc, so our mids will never show up in
+  // known_mids_, causing us to drop packets here.
+#if 0
   // The BUNDLE spec says to drop any packets with unknown MIDs, even if the
   // SSRC is known/latched.
   if (has_mid && known_mids_.find(packet_mid) == known_mids_.end()) {
@@ -365,6 +369,7 @@ RtpPacketSinkInterface* RtpDemuxer::ResolveSink(
     }
   }
 
+#endif
   // We trust signaled SSRC more than payload type which is likely to conflict
   // between streams.
   const auto ssrc_sink_it = sink_by_ssrc_.find(ssrc);
