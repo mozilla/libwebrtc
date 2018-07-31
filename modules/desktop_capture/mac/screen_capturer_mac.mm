@@ -263,6 +263,7 @@ void ScreenCapturerMac::Start(Callback* callback) {
       "webrtc", "ScreenCapturermac::Start", "target display id ", current_display_);
 
   callback_ = callback;
+  update_screen_configuration_ = false;
   // Start and operate CGDisplayStream handler all from capture thread.
   if (!RegisterRefreshAndMoveHandlers()) {
     RTC_LOG(LS_ERROR) << "Failed to register refresh and move handlers.";
@@ -283,7 +284,8 @@ void ScreenCapturerMac::CaptureFrame() {
   }
 
   MacDesktopConfiguration new_config = desktop_config_monitor_->desktop_configuration();
-  if (!desktop_config_.Equals(new_config)) {
+  if (update_screen_configuration_ || !desktop_config_.Equals(new_config)) {
+    update_screen_configuration_ = false;
     desktop_config_ = new_config;
     // If the display configuraiton has changed then refresh capturer data
     // structures. Occasionally, the refresh and move handlers are lost when
