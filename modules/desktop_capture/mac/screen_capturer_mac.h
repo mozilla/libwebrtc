@@ -113,6 +113,13 @@ class ScreenCapturerMac final : public DesktopCapturer {
 
   // Start, CaptureFrame and destructor have to called in the same thread.
   SequenceChecker thread_checker_;
+
+  // Used to force CaptureFrame to update it's screen configuration
+  // and reregister event handlers. This ensure that this
+  // occurs on the ScreenCapture thread. Read and written from
+  // both the VideoCapture thread and ScreenCapture thread.
+  // Protected by desktop_config_monitor_.
+  bool update_screen_configuration_ = false;
 };
 
 }  // namespace webrtc
