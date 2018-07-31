@@ -133,7 +133,7 @@ void MouseCursorMonitorMac::CaptureImage(float scale) {
   NSSize nssize = [nsimage size];  // DIP size
 
   // No need to caputre cursor image if it's unchanged since last capture.
-  if ([[nsimage TIFFRepresentation] isEqual:[last_cursor_ TIFFRepresentation]]) return;
+  if (last_cursor_ && [[nsimage TIFFRepresentation] isEqual:[last_cursor_ TIFFRepresentation]]) return;
   last_cursor_ = nsimage;
 
   DesktopSize size(round(nssize.width * scale),
