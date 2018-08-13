@@ -232,7 +232,7 @@ AudioCodecInfo AudioEncoderOpusImpl::QueryAudioEncoder(
 absl::optional<AudioEncoderOpusConfig> AudioEncoderOpusImpl::SdpToConfig(
     const SdpAudioFormat& format) {
   if (!absl::EqualsIgnoreCase(format.name, "opus") ||
-      format.clockrate_hz != kRtpTimestampRateHz || format.num_channels != 2) {
+      format.clockrate_hz != kRtpTimestampRateHz) {
     return absl::nullopt;
   }
 
