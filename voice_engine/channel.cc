@@ -1474,6 +1474,18 @@ int Channel::SetReceiveAudioLevelIndicationStatus(bool enable,
   return 0;
 }
 
+int Channel::SetReceiveCsrcAudioLevelIndicationStatus(bool enable,
+                                                      unsigned char id) {
+  rtp_header_parser_->DeregisterRtpHeaderExtension(kRtpExtensionCsrcAudioLevel);
+  if (enable &&
+      !rtp_header_parser_->RegisterRtpHeaderExtension(kRtpExtensionCsrcAudioLevel,
+                                                      id)) {
+    return -1;
+  }
+  return 0;
+}
+
+
 void Channel::EnableSendTransportSequenceNumber(int id) {
   int ret =
       SetSendRtpHeaderExtension(true, kRtpExtensionTransportSequenceNumber, id);
@@ -1495,6 +1507,10 @@ void Channel::RegisterSenderCongestionControlObjects(
   TransportFeedbackObserver* transport_feedback_observer =
       transport->transport_feedback_observer();
   PacketRouter* packet_router = transport->packet_router();
+  //This allows us to re-create streams but keep the same channel
+  if (packet_router_ == packet_router) {
+    return;
+  }
 
   RTC_DCHECK(rtp_packet_sender);
   RTC_DCHECK(transport_feedback_observer);
@@ -1514,6 +1530,11 @@ void Channel::RegisterSenderCongestionControlObjects(
 void Channel::RegisterReceiverCongestionControlObjects(
     PacketRouter* packet_router) {
   RTC_DCHECK(packet_router);
+  //This allows us to re-create streams but keep the same channel
+  if (packet_router_ == packet_router) {
+    return;
+  }
+
   RTC_DCHECK(!packet_router_);
   constexpr bool remb_candidate = false;
   packet_router->AddReceiveRtpModule(_rtpRtcpModule.get(), remb_candidate);
