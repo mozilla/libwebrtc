@@ -54,6 +54,15 @@ static const int kMaxLogLineSize = 1024 - 60;
 #include "rtc_base/time_utils.h"
 
 namespace rtc {
+
+bool LogMessage::aec_debug_ = false;
+uint32_t LogMessage::aec_debug_size_ = 4*1024*1024;
+std::string LogMessage::aec_filename_base_;
+
+std::string LogMessage::aec_debug_filename() {
+  return aec_filename_base_;
+}
+
 namespace {
 
 // By default, release builds don't log, debug builds at info level
@@ -114,7 +123,7 @@ std::string LogLineRef::DefaultLogLine() const {
 // LogMessage
 /////////////////////////////////////////////////////////////////////////////
 
-bool LogMessage::log_to_stderr_ = true;
+bool LogMessage::log_to_stderr_ = false;
 
 // The list of logging streams currently configured.
 // Note: we explicitly do not clean this up, because of the uncertain ordering
