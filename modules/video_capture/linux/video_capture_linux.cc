@@ -10,7 +10,6 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <linux/videodev2.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/ioctl.h>
@@ -18,6 +17,14 @@
 #include <sys/select.h>
 #include <time.h>
 #include <unistd.h>
+// v4l includes
+#if defined(__NetBSD__) || defined(__OpenBSD__) // WEBRTC_BSD
+#include <sys/videoio.h>
+#elif defined(__sun)
+#include <sys/videodev2.h>
+#else
+#include <linux/videodev2.h>
+#endif
 
 #include <new>
 #include <string>
