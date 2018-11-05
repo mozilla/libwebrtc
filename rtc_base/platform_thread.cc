@@ -189,15 +189,17 @@ PlatformThread PlatformThread::SpawnThread(
   // Set the reserved stack stack size to 1M, which is the default on Windows
   // and Linux.
   DWORD thread_id = 0;
+  // Mozilla: Set to 256kb for consistency with nsIThreadManager.idl
   PlatformThread::Handle handle = ::CreateThread(
-      nullptr, 1024 * 1024, &RunPlatformThread, start_thread_function_ptr,
+      nullptr, 256 * 1024, &RunPlatformThread, start_thread_function_ptr,
       STACK_SIZE_PARAM_IS_A_RESERVATION, &thread_id);
   RTC_CHECK(handle) << "CreateThread failed";
 #else
   pthread_attr_t attr;
   pthread_attr_init(&attr);
   // Set the stack stack size to 1M.
-  pthread_attr_setstacksize(&attr, 1024 * 1024);
+  // Mozilla: Set to 256kb for consistency with nsIThreadManager.idl
+  pthread_attr_setstacksize(&attr, 256 * 1024);
   pthread_attr_setdetachstate(
       &attr, joinable ? PTHREAD_CREATE_JOINABLE : PTHREAD_CREATE_DETACHED);
   PlatformThread::Handle handle;
