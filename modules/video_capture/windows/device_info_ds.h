@@ -95,6 +95,7 @@ class DeviceInfoDS : public DeviceInfoImpl {
   HWND _hwnd;
   WNDCLASS _wndClass;
   HINSTANCE _hInstance;
+  HDEVNOTIFY _hdevnotify;
 };
 }  // namespace videocapturemodule
 }  // namespace webrtc
