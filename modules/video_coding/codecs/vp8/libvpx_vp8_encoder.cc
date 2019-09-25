@@ -687,7 +687,7 @@ int LibvpxVp8Encoder::InitEncode(const VideoCodec* inst,
 
 int LibvpxVp8Encoder::GetCpuSpeed(int width, int height) {
 #if defined(WEBRTC_ARCH_ARM) || defined(WEBRTC_ARCH_ARM64) || \
-    defined(WEBRTC_ANDROID)
+    defined(WEBRTC_ANDROID) || defined(WEBRTC_ARCH_MIPS)
   // On mobile platform, use a lower speed setting for lower resolutions for
   // CPUs with 4 or more cores.
   RTC_DCHECK_GT(number_of_cores_, 0);
@@ -720,7 +720,7 @@ int LibvpxVp8Encoder::GetCpuSpeed(int width, int height) {
 }
 
 int LibvpxVp8Encoder::NumberOfThreads(int width, int height, int cpus) {
-#if defined(WEBRTC_ANDROID)
+#if defined(WEBRTC_ANDROID) || defined(WEBRTC_ARCH_MIPS)
   if (width * height >= 320 * 180) {
     if (cpus >= 4) {
       // 3 threads for CPUs with 4 and more cores since most of times only 4
@@ -794,7 +794,7 @@ int LibvpxVp8Encoder::InitAndSetControlSettings() {
   // multi-res encoding feature?
   denoiserState denoiser_state = kDenoiserOnYOnly;
 #if defined(WEBRTC_ARCH_ARM) || defined(WEBRTC_ARCH_ARM64) || \
-    defined(WEBRTC_ANDROID)
+    defined(WEBRTC_ANDROID) || defined(WEBRTC_ARCH_MIPS)
   denoiser_state = kDenoiserOnYOnly;
 #else
   denoiser_state = kDenoiserOnAdaptive;
