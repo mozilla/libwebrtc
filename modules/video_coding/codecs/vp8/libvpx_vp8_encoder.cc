@@ -749,7 +749,7 @@ int LibvpxVp8Encoder::InitEncode(const VideoCodec* inst,
 }
 
 int LibvpxVp8Encoder::GetCpuSpeed(int width, int height) {
-#ifdef MOBILE_ARM
+#if defined(MOBILE_ARM) || defined(WEBRTC_ARCH_MIPS)
   // On mobile platform, use a lower speed setting for lower resolutions for
   // CPUs with 4 or more cores.
   RTC_DCHECK_GT(number_of_cores_, 0);
@@ -782,7 +782,7 @@ int LibvpxVp8Encoder::GetCpuSpeed(int width, int height) {
 }
 
 int LibvpxVp8Encoder::NumberOfThreads(int width, int height, int cpus) {
-#if defined(WEBRTC_ANDROID)
+#if defined(WEBRTC_ANDROID) || defined(WEBRTC_ARCH_MIPS)
   if (width * height >= 320 * 180) {
     if (cpus >= 4) {
       // 3 threads for CPUs with 4 and more cores since most of times only 4
@@ -854,7 +854,7 @@ int LibvpxVp8Encoder::InitAndSetControlSettings() {
   // for getting the denoised frame from the encoder and using that
   // when encoding lower resolution streams. Would it work with the
   // multi-res encoding feature?
-#ifdef MOBILE_ARM
+#if defined(MOBILE_ARM) || defined(WEBRTC_ARCH_MIPS)
   denoiserState denoiser_state = kDenoiserOnYOnly;
 #else
   denoiserState denoiser_state = kDenoiserOnAdaptive;
