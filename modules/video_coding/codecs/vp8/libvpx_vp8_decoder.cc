@@ -46,7 +46,7 @@ const char kVp8PostProcArmFieldTrial[] = "WebRTC-VP8-Postproc-Config-Arm";
 const char kVp8PostProcFieldTrial[] = "WebRTC-VP8-Postproc-Config";
 
 #if defined(WEBRTC_ARCH_ARM) || defined(WEBRTC_ARCH_ARM64) || \
-    defined(WEBRTC_ANDROID)
+    defined(WEBRTC_ANDROID)  || defined(WEBRTC_ARCH_MIPS)
 constexpr bool kIsArm = true;
 #else
 constexpr bool kIsArm = false;
