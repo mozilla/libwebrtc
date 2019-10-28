@@ -12,7 +12,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <linux/videodev2.h>
+#include <poll.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/ioctl.h>
@@ -20,6 +20,14 @@
 #include <sys/select.h>
 #include <time.h>
 #include <unistd.h>
+// v4l includes
+#if defined(__NetBSD__) || defined(__OpenBSD__) // WEBRTC_BSD
+#include <sys/videoio.h>
+#elif defined(__sun)
+#include <sys/videodev2.h>
+#else
+#include <linux/videodev2.h>
+#endif
 
 #include <new>
 #include <string>
@@ -405,16 +413,13 @@ bool VideoCaptureModuleV4L2::CaptureProcess() {
   RTC_CHECK_RUNS_SERIALIZED(&capture_checker_);
 
   int retVal = 0;
-  fd_set rSet;
-  struct timeval timeout;
+  struct pollfd rSet;
 
-  FD_ZERO(&rSet);
-  FD_SET(_deviceFd, &rSet);
-  timeout.tv_sec = 1;
-  timeout.tv_usec = 0;
+  rSet.fd = _deviceFd;
+  rSet.events = POLLIN;
+  rSet.revents = 0;
 
-  // _deviceFd written only in StartCapture, when this thread isn't running.
-  retVal = select(_deviceFd + 1, &rSet, NULL, NULL, &timeout);
+  retVal = poll(&rSet, 1, 1000);
 
   {
     MutexLock lock(&capture_lock_);
@@ -424,12 +429,12 @@ bool VideoCaptureModuleV4L2::CaptureProcess() {
     }
 
     if (retVal < 0 && errno != EINTR) {  // continue if interrupted
-      // select failed
+      // poll failed
       return false;
     } else if (retVal == 0) {
-      // select timed out
+      // poll timed out
       return true;
-    } else if (!FD_ISSET(_deviceFd, &rSet)) {
+    } else if (!(rSet.revents & POLLIN)) {
       // not event on camera handle
       return true;
     }
