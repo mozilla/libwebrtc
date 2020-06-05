@@ -148,6 +148,7 @@ class VideoReceiveStreamInterface : public MediaReceiveStreamInterface {
 
     uint32_t rtcp_sender_packets_sent;
     uint32_t rtcp_sender_octets_sent;
+    int64_t rtcp_sender_ntp_timestamp_ms;
 
     // Timing frame info: all important timestamps for a full lifetime of a
     // single 'timing frame'.
