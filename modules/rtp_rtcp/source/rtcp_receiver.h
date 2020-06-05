@@ -119,7 +119,8 @@ class RTCPReceiver final {
 
   // Get received sender packet and octet counts
   void RemoteRTCPSenderInfo(uint32_t* packet_count,
-                            uint32_t* octet_count) const;
+                            uint32_t* octet_count,
+                            int64_t* ntp_timestamp_ms) const;
 
   absl::optional<TimeDelta> AverageRtt() const;
   absl::optional<TimeDelta> LastRtt() const;

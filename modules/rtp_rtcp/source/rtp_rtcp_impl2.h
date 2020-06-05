@@ -195,7 +195,8 @@ class ModuleRtpRtcpImpl2 final : public RtpRtcpInterface,
       StreamDataCounters* rtx_counters) const override;
 
   void RemoteRTCPSenderInfo(uint32_t* packet_count,
-                            uint32_t* octet_count) const override;
+                            uint32_t* octet_count,
+                            int64_t* ntp_timestamp_ms) const override;
 
   // A snapshot of the most recent Report Block with additional data of
   // interest to statistics. Used to implement RTCRemoteInboundRtpStreamStats.
