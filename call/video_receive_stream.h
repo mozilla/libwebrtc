@@ -144,6 +144,7 @@ class VideoReceiveStream : public MediaReceiveStream {
 
     uint32_t rtcp_sender_packets_sent;
     uint32_t rtcp_sender_octets_sent;
+    NtpTime rtcp_sender_ntp_timestamp;
 
     // Timing frame info: all important timestamps for a full lifetime of a
     // single 'timing frame'.
