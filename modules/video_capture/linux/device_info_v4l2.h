@@ -18,6 +18,8 @@
 #include "rtc_base/platform_thread.h"
 #include <sys/inotify.h>
 
+struct v4l2_capability;
+
 namespace webrtc {
 namespace videocapturemodule {
 class DeviceInfoV4l2 : public DeviceInfoImpl {
@@ -49,6 +51,7 @@ class DeviceInfoV4l2 : public DeviceInfoImpl {
 
  private:
   bool IsDeviceNameMatches(const char* name, const char* deviceUniqueIdUTF8);
+  bool IsVideoCaptureDevice(struct v4l2_capability* cap);
 
 #ifdef WEBRTC_LINUX
   void HandleEvent(inotify_event* event, int fd);
