@@ -202,8 +202,7 @@ uint32_t DeviceInfoV4l2::NumberOfDevices() {
     snprintf(device, sizeof(device), "/dev/video%d", n);
     if ((fd = open(device, O_RDONLY)) != -1) {
       // query device capabilities and make sure this is a video capture device
-      if (ioctl(fd, VIDIOC_QUERYCAP, &cap) < 0 ||
-          !(cap.device_caps & V4L2_CAP_VIDEO_CAPTURE)) {
+      if (ioctl(fd, VIDIOC_QUERYCAP, &cap) < 0 || !IsVideoCaptureDevice(&cap)) {
         close(fd);
         continue;
       }
@@ -235,8 +234,7 @@ int32_t DeviceInfoV4l2::GetDeviceName(uint32_t deviceNumber,
     sprintf(device, "/dev/video%d", device_index);
     if ((fd = open(device, O_RDONLY)) != -1) {
       // query device capabilities and make sure this is a video capture device
-      if (ioctl(fd, VIDIOC_QUERYCAP, &cap) < 0 ||
-          !(cap.device_caps & V4L2_CAP_VIDEO_CAPTURE)) {
+      if (ioctl(fd, VIDIOC_QUERYCAP, &cap) < 0 || !IsVideoCaptureDevice(&cap)) {
         close(fd);
         continue;
       }
@@ -321,7 +319,7 @@ int32_t DeviceInfoV4l2::CreateCapabilityMap(const char* deviceUniqueIdUTF8) {
     struct v4l2_capability cap;
     if (ioctl(fd, VIDIOC_QUERYCAP, &cap) == 0) {
       // skip devices without video capture capability
-      if (!(cap.device_caps & V4L2_CAP_VIDEO_CAPTURE)) {
+      if (!IsVideoCaptureDevice(&cap)) {
         continue;
       }
 
@@ -381,6 +379,15 @@ bool DeviceInfoV4l2::IsDeviceNameMatches(const char* name,
   if (strncmp(deviceUniqueIdUTF8, name, strlen(name)) == 0)
     return true;
   return false;
+}
+
+bool DeviceInfoV4l2::IsVideoCaptureDevice(struct v4l2_capability* cap)
+{
+  if (cap->capabilities & V4L2_CAP_DEVICE_CAPS) {
+    return cap->device_caps & V4L2_CAP_VIDEO_CAPTURE;
+  } else {
+    return cap->capabilities & V4L2_CAP_VIDEO_CAPTURE;
+  }
 }
 
 int32_t DeviceInfoV4l2::FillCapabilities(int fd) {
