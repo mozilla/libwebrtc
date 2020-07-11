@@ -94,6 +94,66 @@ DesktopDisplayDevice& DesktopDisplayDevice::operator= (DesktopDisplayDevice& oth
   return *this;
 }
 
+DesktopTab::DesktopTab() {
+  tabBrowserId_ = 0;
+  tabNameUTF8_= NULL;
+  tabUniqueIdUTF8_= NULL;
+  tabCount_ = 0;
+}
+
+DesktopTab::~DesktopTab() {
+  if (tabNameUTF8_) {
+    delete [] tabNameUTF8_;
+  }
+
+  if (tabUniqueIdUTF8_) {
+    delete [] tabUniqueIdUTF8_;
+  }
+
+  tabNameUTF8_= NULL;
+  tabUniqueIdUTF8_= NULL;
+}
+
+void DesktopTab::setTabBrowserId(uint64_t tabBrowserId) {
+  tabBrowserId_ = tabBrowserId;
+}
+
+void DesktopTab::setUniqueIdName(const char *tabUniqueIdUTF8) {
+  SetStringMember(&tabUniqueIdUTF8_, tabUniqueIdUTF8);
+}
+
+void DesktopTab::setTabName(const char *tabNameUTF8) {
+  SetStringMember(&tabNameUTF8_, tabNameUTF8);
+}
+
+void DesktopTab::setTabCount(const uint32_t count) {
+  tabCount_ = count;
+}
+
+uint64_t DesktopTab::getTabBrowserId() {
+  return tabBrowserId_;
+}
+
+const char *DesktopTab::getUniqueIdName() {
+  return tabUniqueIdUTF8_;
+}
+
+const char *DesktopTab::getTabName() {
+  return tabNameUTF8_;
+}
+
+uint32_t DesktopTab::getTabCount() {
+  return tabCount_;
+}
+
+DesktopTab& DesktopTab::operator= (DesktopTab& other) {
+  tabBrowserId_ = other.getTabBrowserId();
+  setUniqueIdName(other.getUniqueIdName());
+  setTabName(other.getTabName());
+
+  return *this;
+}
+
 DesktopDeviceInfoImpl::DesktopDeviceInfoImpl() {
 }
 
@@ -107,7 +167,7 @@ int32_t DesktopDeviceInfoImpl::getDisplayDeviceCount() {
 
 int32_t DesktopDeviceInfoImpl::getDesktopDisplayDeviceInfo(int32_t nIndex,
                                                            DesktopDisplayDevice & desktopDisplayDevice) {
-  if(nIndex < 0 || nIndex >= desktop_display_list_.size()) {
+  if(nIndex < 0 || (size_t) nIndex >= desktop_display_list_.size()) {
     return -1;
   }
 
@@ -126,7 +186,7 @@ int32_t DesktopDeviceInfoImpl::getWindowCount() {
 }
 int32_t DesktopDeviceInfoImpl::getWindowInfo(int32_t nIndex,
                                              DesktopDisplayDevice &windowDevice) {
-  if (nIndex < 0 || nIndex >= desktop_window_list_.size()) {
+  if (nIndex < 0 || (size_t) nIndex >= desktop_window_list_.size()) {
     return -1;
   }
 
@@ -141,20 +201,42 @@ int32_t DesktopDeviceInfoImpl::getWindowInfo(int32_t nIndex,
   return 0;
 }
 
+int32_t DesktopDeviceInfoImpl::getTabCount() {
+  return desktop_tab_list_.size();
+}
+
+int32_t DesktopDeviceInfoImpl::getTabInfo(int32_t nIndex,
+                                          DesktopTab & desktopTab) {
+  if (nIndex < 0 || (size_t) nIndex >= desktop_tab_list_.size()) {
+    return -1;
+  }
+
+  std::map<intptr_t,DesktopTab*>::iterator iter = desktop_tab_list_.begin();
+  std::advance(iter, nIndex);
+  DesktopTab * pDesktopTab = iter->second;
+  if (pDesktopTab) {
+    desktopTab = (*pDesktopTab);
+  }
+
+  return 0;
+}
+
 void DesktopDeviceInfoImpl::CleanUp() {
   CleanUpScreenList();
   CleanUpWindowList();
+  CleanUpTabList();
 }
-
 int32_t DesktopDeviceInfoImpl::Init() {
   InitializeScreenList();
   InitializeWindowList();
+  InitializeTabList();
 
   return 0;
 }
 int32_t DesktopDeviceInfoImpl::Refresh() {
   RefreshScreenList();
   RefreshWindowList();
+  RefreshTabList();
 
   return 0;
 }
@@ -199,6 +281,20 @@ void DesktopDeviceInfoImpl::RefreshWindowList() {
   InitializeWindowList();
 }
 
+void DesktopDeviceInfoImpl::CleanUpTabList() {
+  for (auto &iterTab : desktop_tab_list_) {
+    DesktopTab *pDesktopTab = iterTab.second;
+    delete pDesktopTab;
+    iterTab.second = NULL;
+  }
+  desktop_tab_list_.clear();
+}
+
+void DesktopDeviceInfoImpl::RefreshTabList() {
+  CleanUpTabList();
+  InitializeTabList();
+}
+
 void DesktopDeviceInfoImpl::CleanUpScreenList() {
   std::map<intptr_t,DesktopDisplayDevice*>::iterator iterDevice;
   for (iterDevice=desktop_display_list_.begin(); iterDevice != desktop_display_list_.end(); iterDevice++){
@@ -207,9 +303,11 @@ void DesktopDeviceInfoImpl::CleanUpScreenList() {
     iterDevice->second = NULL;
   }
   desktop_display_list_.clear();
- }
+}
+
 void DesktopDeviceInfoImpl::RefreshScreenList() {
   CleanUpScreenList();
   InitializeScreenList();
 }
 }
+
