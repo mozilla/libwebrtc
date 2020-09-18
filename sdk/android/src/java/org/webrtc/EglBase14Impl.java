@@ -21,7 +21,6 @@ import android.opengl.GLException;
 import android.os.Build;
 import android.view.Surface;
 import androidx.annotation.Nullable;
-import org.webrtc.EglBase;
 
 /**
  * Holds EGL state and utility methods for handling an EGL14 EGLContext, an EGLDisplay,
