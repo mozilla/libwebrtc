@@ -239,6 +239,7 @@ if (rtc_include_tests) {
 
 if (is_linux || is_chromeos) {
   if (rtc_use_pipewire) {
+    defines = [ "WEBRTC_USE_PIPEWIRE" ]
     pkg_config("gio") {
       packages = [
         "gio-2.0",
@@ -393,6 +394,7 @@ rtc_library("desktop_capture") {
     }
   }
   if (rtc_use_x11_extensions || rtc_use_pipewire) {
+    include_dirs = [ "/third_party/libwebrtc/third_party/pipewire" ]
     sources += [
       "mouse_cursor_monitor_linux.cc",
       "screen_capturer_linux.cc",
@@ -581,6 +583,7 @@ rtc_library("desktop_capture") {
   }
 
   if (rtc_use_pipewire) {
+    include_dirs = [ "/third_party/libwebrtc/third_party/pipewire" ]
     sources += [
       "linux/wayland/base_capturer_pipewire.cc",
       "linux/wayland/base_capturer_pipewire.h",
