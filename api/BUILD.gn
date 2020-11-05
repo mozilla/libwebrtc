@@ -35,7 +35,7 @@ rtc_source_set("callfactory_api") {
   ]
 }
 
-if (!build_with_chromium) {
+if (!build_with_chromium && !build_with_mozilla) {
   rtc_library("create_peerconnection_factory") {
     visibility = [ "*" ]
     allow_poison = [ "default_task_queue" ]
@@ -186,6 +186,10 @@ rtc_source_set("ice_transport_interface") {
 }
 
 rtc_library("dtls_transport_interface") {
+# Previously, Mozilla has tried to limit including this dep, but as
+# upstream changes, it requires whack-a-mole.  Making it an empty
+# definition has the same effect, but only requires one change.
+if (!build_with_mozilla) {
   visibility = [ "*" ]
 
   sources = [
@@ -202,6 +206,7 @@ rtc_library("dtls_transport_interface") {
   ]
   absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
 }
+}
 
 rtc_library("dtmf_sender_interface") {
   visibility = [ "*" ]
@@ -214,6 +219,10 @@ rtc_library("dtmf_sender_interface") {
 }
 
 rtc_library("rtp_sender_interface") {
+# Previously, Mozilla has tried to limit including this dep, but as
+# upstream changes, it requires whack-a-mole.  Making it an empty
+# definition has the same effect, but only requires one change.
+if (!build_with_mozilla) {
   visibility = [ "*" ]
 
   sources = [
@@ -225,8 +234,8 @@ rtc_library("rtp_sender_interface") {
     ":dtmf_sender_interface",
     ":frame_transformer_interface",
     ":media_stream_interface",
-    ":rtc_error",
     ":rtp_parameters",
+    ":rtp_sender_setparameters_callback",
     ":scoped_refptr",
     "../rtc_base:checks",
     "../rtc_base:refcount",
@@ -234,10 +243,24 @@ rtc_library("rtp_sender_interface") {
     "crypto:frame_encryptor_interface",
     "video_codecs:video_codecs_api",
   ]
+}
+}
+
+rtc_library("rtp_sender_setparameters_callback") {
+  visibility = [ "*" ]
+
+  sources = [
+    "rtp_sender_setparameters_callback.cc",
+    "rtp_sender_setparameters_callback.h",
+  ]
+  deps = [
+    ":rtc_error",
+  ]
   absl_deps = [ "//third_party/abseil-cpp/absl/functional:any_invocable" ]
 }
 
 rtc_library("libjingle_peerconnection_api") {
+if (!build_with_mozilla) {
   visibility = [ "*" ]
   cflags = []
   sources = [
@@ -353,6 +376,7 @@ rtc_library("libjingle_peerconnection_api") {
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/types:optional",
   ]
+}
 }
 
 rtc_source_set("frame_transformer_interface") {
@@ -545,6 +569,7 @@ rtc_source_set("peer_network_dependencies") {
 }
 
 rtc_source_set("peer_connection_quality_test_fixture_api") {
+if (!build_with_mozilla) {
   visibility = [ "*" ]
   testonly = true
   sources = [ "test/peerconnection_quality_test_fixture.h" ]
@@ -594,6 +619,7 @@ rtc_source_set("peer_connection_quality_test_fixture_api") {
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/types:optional",
   ]
+}
 }
 
 rtc_source_set("frame_generator_api") {
@@ -713,6 +739,7 @@ rtc_library("create_frame_generator") {
   absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
 }
 
+if (!build_with_mozilla) {
 rtc_library("create_peer_connection_quality_test_frame_generator") {
   visibility = [ "*" ]
   testonly = true
@@ -728,6 +755,7 @@ rtc_library("create_peer_connection_quality_test_frame_generator") {
     "test/pclf:media_configuration",
   ]
   absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
+}
 }
 
 rtc_source_set("libjingle_logging_api") {
@@ -901,6 +929,7 @@ rtc_source_set("refcountedbase") {
   ]
 }
 
+if (!build_with_mozilla) {
 rtc_library("ice_transport_factory") {
   visibility = [ "*" ]
   sources = [
@@ -918,6 +947,7 @@ rtc_library("ice_transport_factory") {
     "../rtc_base/system:rtc_export",
     "rtc_event_log:rtc_event_log",
   ]
+}
 }
 
 rtc_library("neteq_simulator_api") {
