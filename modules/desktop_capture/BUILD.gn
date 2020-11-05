@@ -341,37 +341,12 @@ rtc_library("desktop_capture") {
     ]
     deps += [ ":desktop_capture_objc" ]
   }
-
-  if (build_with_mozilla) {
-    sources += [
-      "desktop_device_info.cc",
-      "desktop_device_info.h",
-    ]
-    if (is_win) {
-      sources += [
-        "app_capturer_win.cc",
-        "win/desktop_device_info_win.cc",
-        "win/win_shared.cc",
-      ]
-    }
-  }
   if (rtc_use_x11_extensions || rtc_use_pipewire) {
     sources += [
       "mouse_cursor_monitor_linux.cc",
       "screen_capturer_linux.cc",
       "window_capturer_linux.cc",
     ]
-
-    if (build_with_mozilla && (is_linux || is_chromeos)) {
-      sources += [
-        "app_capturer_linux.cc",
-        "linux/x11/app_capturer_x11.cc",
-        "linux/x11/desktop_device_info_linux.cc",
-        "linux/x11/desktop_device_info_linux.h",
-        "linux/x11/shared_x_util.cc",
-        "linux/x11/shared_x_util.h",
-      ]
-    }
   }
 
   if (rtc_use_x11_extensions) {
@@ -537,9 +512,7 @@ rtc_library("desktop_capture") {
     deps += [ "../../rtc_base:sanitizer" ]
   }
 
-  if (!build_with_mozilla) {
-    deps += [ "//third_party/libyuv" ]
-  }
+  deps += [ "//third_party/libyuv" ]
 
   if (use_desktop_capture_differ_sse2) {
     deps += [ ":desktop_capture_differ_sse2" ]
