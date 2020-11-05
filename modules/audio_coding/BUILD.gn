@@ -553,7 +553,7 @@ rtc_library("webrtc_opus_wrapper") {
     deps += [ rtc_opus_dir ]
     public_configs = [ "//third_party/opus:opus_config" ]
   } else if (build_with_mozilla) {
-    include_dirs = [ getenv("DIST") + "/include/opus" ]
+    public_configs = [ "//third_party/opus:opus_config" ]
   }
 }
 

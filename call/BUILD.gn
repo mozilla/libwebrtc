@@ -44,7 +44,7 @@ rtc_library("call_interfaces") {
     "../api:network_state_predictor_api",
     "../api:rtp_headers",
     "../api:rtp_parameters",
-    "../api:rtp_sender_interface",
+    "../api:rtp_sender_setparameters_callback",
     "../api:scoped_refptr",
     "../api:transport_api",
     "../api/adaptation:resource_adaptation_api",
@@ -345,6 +345,16 @@ rtc_library("call") {
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/types:optional",
   ]
+  if (build_with_mozilla) { # See Bug 1820869.
+    sources -= [
+      "create_call.cc",
+      "degraded_call.cc",
+    ]
+    deps -= [
+      ":fake_network",
+      ":simulated_network",
+    ]
+  }
 }
 
 rtc_source_set("receive_stream_interface") {
@@ -372,7 +382,7 @@ rtc_library("video_stream_api") {
     "../api:frame_transformer_interface",
     "../api:rtp_headers",
     "../api:rtp_parameters",
-    "../api:rtp_sender_interface",
+    "../api:rtp_sender_setparameters_callback",
     "../api:scoped_refptr",
     "../api:transport_api",
     "../api/adaptation:resource_adaptation_api",
