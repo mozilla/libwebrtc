@@ -35,6 +35,11 @@ if (is_mac) {
   import("//build/config/mac/rules.gni")
 }
 
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+
 if (is_fuchsia) {
   import("//build/config/fuchsia/config.gni")
 }
@@ -42,6 +47,11 @@ if (is_fuchsia) {
 # This declare_args is separated from the next one because args declared
 # in this one, can be read from the next one (args defined in the same
 # declare_args cannot be referenced in that scope).
+declare_args() {
+  # Enable to use the Mozilla internal settings.
+  build_with_mozilla = true
+}
+
 declare_args() {
   # Setting this to true will make RTC_EXPORT (see rtc_base/system/rtc_export.h)
   # expand to code that will manage symbols visibility.
@@ -92,7 +102,7 @@ declare_args() {
   # will tell the pre-processor to remove the default definition of the
   # SystemTimeNanos() which is defined in rtc_base/system_time.cc. In
   # that case a new implementation needs to be provided.
-  rtc_exclude_system_time = build_with_chromium
+  rtc_exclude_system_time = build_with_chromium || build_with_mozilla
 
   # Setting this to false will require the API user to pass in their own
   # SSLCertificateVerifier to verify the certificates presented from a
@@ -118,7 +128,7 @@ declare_args() {
 
   # Used to specify an external OpenSSL include path when not compiling the
   # library that comes with WebRTC (i.e. rtc_build_ssl == 0).
-  rtc_ssl_root = ""
+  rtc_ssl_root = "unused"
 
   # Enable when an external authentication mechanism is used for performing
   # packet authentication for RTP packets instead of libsrtp.
@@ -135,13 +145,13 @@ declare_args() {
   rtc_enable_bwe_test_logging = false
 
   # Set this to false to skip building examples.
-  rtc_build_examples = true
+  rtc_build_examples = false
 
   # Set this to false to skip building tools.
-  rtc_build_tools = true
+  rtc_build_tools = false
 
   # Set this to false to skip building code that requires X11.
-  rtc_use_x11 = ozone_platform_x11
+  rtc_use_x11 = use_x11
 
   # Set this to use PipeWire on the Wayland display server.
   # By default it's only enabled on desktop Linux (excludes ChromeOS) and
@@ -151,9 +161,6 @@ declare_args() {
 
   # Set this to link PipeWire and required libraries directly instead of using the dlopen.
   rtc_link_pipewire = false
-
-  # Enable to use the Mozilla internal settings.
-  build_with_mozilla = false
 
   # Experimental: enable use of Android AAudio which requires Android SDK 26 or above
   # and NDK r16 or above.
@@ -268,7 +275,7 @@ declare_args() {
   rtc_build_json = !build_with_mozilla
   rtc_build_libsrtp = !build_with_mozilla
   rtc_build_libvpx = !build_with_mozilla
-  rtc_libvpx_build_vp9 = !build_with_mozilla
+  rtc_libvpx_build_vp9 = true
   rtc_build_opus = !build_with_mozilla
   rtc_build_ssl = !build_with_mozilla
 
@@ -287,7 +294,7 @@ declare_args() {
 
   # Chromium uses its own IO handling, so the internal ADM is only built for
   # standalone WebRTC.
-  rtc_include_internal_audio_device = !build_with_chromium
+  rtc_include_internal_audio_device = !build_with_chromium && !build_with_mozilla
 
   # Set this to true to enable the avx2 support in webrtc.
   # TODO: Make sure that AVX2 works also for non-clang compilers.
@@ -330,6 +337,9 @@ declare_args() {
   # Enable gRPC used for negotiation in multiprocess tests
   rtc_enable_grpc = rtc_enable_protobuf && (is_linux || is_mac)
 }
+
+# Enable liboam only on non-mozilla builds.
+enable_libaom = !build_with_mozilla
 
 # Make it possible to provide custom locations for some libraries (move these
 # up into declare_args should we need to actually use them for the GN build).
@@ -1129,7 +1139,7 @@ if (is_mac || is_ios) {
   }
 }
 
-if (is_android) {
+if (is_android && !build_with_mozilla) {
   template("rtc_android_library") {
     android_library(target_name) {
       forward_variables_from(invoker,

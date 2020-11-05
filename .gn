@@ -69,6 +69,8 @@ default_args = {
   # Prevent jsoncpp to pass -Wno-deprecated-declarations to users
   jsoncpp_no_deprecated_declarations = false
 
+  use_custom_libcxx = false
+
   # Fixes the abi-revision issue.
   # TODO(https://bugs.webrtc.org/14437):  Remove this section if general
   # Chromium fix resolves the problem.
