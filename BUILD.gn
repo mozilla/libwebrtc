@@ -33,7 +33,7 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-if (!build_with_chromium) {
+if (!build_with_chromium && !build_with_mozilla) {
   # This target should (transitively) cause everything to be built; if you run
   # 'ninja default' and then 'ninja all', the second build should do no work.
   group("default") {
@@ -148,6 +148,10 @@ config("common_inherited_config") {
   }
   if (rtc_enable_objc_symbol_export) {
     defines += [ "WEBRTC_ENABLE_OBJC_SYMBOL_EXPORT" ]
+  }
+
+  if (build_with_mozilla) {
+    defines += [ "WEBRTC_MOZILLA_BUILD" ]
   }
 
   if (!rtc_builtin_ssl_root_certificates) {
@@ -458,8 +462,10 @@ config("common_config") {
   }
 }
 
+if (is_mac) {
 config("common_objc") {
   frameworks = [ "Foundation.framework" ]
+}
 }
 
 if (!build_with_chromium) {
@@ -501,6 +507,23 @@ if (!build_with_chromium) {
       "sdk",
       "video",
     ]
+    if (build_with_mozilla) {
+      deps -= [
+        "api:create_peerconnection_factory",
+        "api:rtc_error",
+        "api:transport_api",
+        "api/crypto",
+        "api/rtc_event_log:rtc_event_log_factory",
+        "api/task_queue",
+        "api/task_queue:default_task_queue_factory",
+        "api/test/metrics",
+        "logging:rtc_event_log_api",
+        "p2p:rtc_p2p",
+        "pc:libjingle_peerconnection",
+        "pc:rtc_pc",
+        "sdk",
+      ]
+    }
 
     if (rtc_include_builtin_audio_codecs) {
       deps += [
@@ -520,6 +543,7 @@ if (!build_with_chromium) {
       deps += [
         "api/video:video_frame",
         "api/video:video_rtp_headers",
+        "test:rtp_test_utils",
       ]
     } else {
       deps += [
