@@ -231,6 +231,7 @@ rtc_library("audio_test_common") {
   ]
 }
 
+if (!build_with_mozilla) {
 if (!build_with_chromium) {
   if (is_mac || is_ios) {
     rtc_library("video_test_mac") {
@@ -284,8 +285,12 @@ if (!build_with_chromium) {
     }
   }
 }
+}
 
 rtc_library("rtp_test_utils") {
+  if (build_with_mozilla) {
+  sources = []
+  } else {
   testonly = true
   sources = [
     "rtcp_packet_parser.cc",
@@ -295,6 +300,7 @@ rtc_library("rtp_test_utils") {
     "rtp_file_writer.cc",
     "rtp_file_writer.h",
   ]
+  }
 
   deps = [
     "../api:array_view",
@@ -544,7 +550,9 @@ rtc_library("video_test_support") {
   ]
 
   if (!is_ios) {
+    if (!build_with_mozilla) {
     deps += [ "//third_party:jpeg" ]
+    }
     sources += [ "testsupport/jpeg_frame_writer.cc" ]
   } else {
     sources += [ "testsupport/jpeg_frame_writer_ios.cc" ]
@@ -1285,6 +1293,7 @@ if (!build_with_chromium) {
   }
 }
 
+if (!build_with_mozilla) {
 if (!build_with_chromium && is_android) {
   rtc_android_library("native_test_java") {
     testonly = true
@@ -1297,6 +1306,7 @@ if (!build_with_chromium && is_android) {
       "//testing/android/native_test:native_test_java",
     ]
   }
+}
 }
 
 rtc_library("call_config_utils") {
