@@ -93,21 +93,12 @@ if (!build_with_chromium) {
         "strmiids.lib",
         "user32.lib",
       ]
-
-      if (build_with_mozilla) {
-        sources += [
-          "windows/BaseFilter.cpp",
-          "windows/BaseInputPin.cpp",
-          "windows/BasePin.cpp",
-          "windows/MediaType.cpp",
-        ]
-      }
     }
     if (is_fuchsia) {
       sources = [ "video_capture_factory_null.cc" ]
     }
 
-    if (build_with_mozilla && is_android) {
+    if (!build_with_mozilla && is_android) {
       include_dirs = [
         "/config/external/nspr",
         "/nsprpub/lib/ds",
