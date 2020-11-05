@@ -64,10 +64,6 @@ class Timing;
 
 namespace webrtc {
 class VideoFrame;
-
-webrtc::RTCError InvokeSetParametersCallback(SetParametersCallback& callback,
-                                             RTCError error);
-
 }  // namespace webrtc
 
 namespace cricket {
