@@ -8,7 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <immintrin.h>
+#include "common_audio/intrin.h"
 
 #include "modules/audio_processing/aec3/adaptive_fir_filter.h"
 #include "rtc_base/checks.h"

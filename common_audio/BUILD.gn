@@ -267,14 +267,10 @@ if (current_cpu == "x86" || current_cpu == "x64") {
       "resampler/sinc_resampler_avx2.cc",
     ]
 
-    if (is_win) {
-      cflags = [ "/arch:AVX2" ]
-    } else {
       cflags = [
         "-mavx2",
         "-mfma",
       ]
-    }
 
     deps = [
       ":fir_filter",
