@@ -31,6 +31,7 @@ rtc_library("task_queue") {
   ]
 }
 
+if (rtc_include_tests) {
 rtc_library("task_queue_test") {
   visibility = [ "*" ]
   testonly = true
@@ -78,6 +79,7 @@ rtc_library("task_queue_test") {
       "//third_party/abseil-cpp/absl/strings",
     ]
   }
+}
 }
 
 rtc_library("default_task_queue_factory") {
