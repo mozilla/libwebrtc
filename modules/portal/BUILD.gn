@@ -11,6 +11,7 @@ import("//tools/generate_stubs/rules.gni")
 import("../../webrtc.gni")
 
 if ((is_linux || is_chromeos) && rtc_use_pipewire) {
+if (!build_with_mozilla) {
   pkg_config("gio") {
     packages = [
       "gio-2.0",
@@ -88,6 +89,12 @@ if ((is_linux || is_chromeos) && rtc_use_pipewire) {
       defines += [ "WEBRTC_USE_GIO" ]
     }
   }
+} else {
+  config("pipewire_all") {
+  }
+  config("pipewire_config") {
+  }
+}
 
   rtc_library("portal") {
     sources = [
@@ -120,5 +127,22 @@ if ((is_linux || is_chromeos) && rtc_use_pipewire) {
 
       deps += [ ":pipewire_stubs" ]
     }
+
+    if (build_with_mozilla) {
+      configs -= [
+        ":gio",
+        ":pipewire",
+        ":pipewire_config",
+      ]
+      deps -= [ ":pipewire_stubs" ]
+      defines -= [ "WEBRTC_DLOPEN_PIPEWIRE" ]
+      public_deps = [
+        "//third_party/pipewire",
+        "//third_party/drm",
+        "//third_party/gbm",
+        "//third_party/libepoxy"
+      ]
+    }
   }
 }
+
