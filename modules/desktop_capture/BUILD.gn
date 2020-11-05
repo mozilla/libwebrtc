@@ -241,6 +241,8 @@ if (rtc_include_tests) {
 
 if (is_linux || is_chromeos) {
   if (rtc_use_pipewire) {
+    defines = [ "WEBRTC_USE_PIPEWIRE" ]
+    if (!build_with_mozilla) {
     pkg_config("gio") {
       packages = [
         "gio-2.0",
@@ -254,7 +256,9 @@ if (is_linux || is_chromeos) {
         ignore_libs = true
       }
     }
+    }
 
+if (!build_with_mozilla) {
     pkg_config("gbm") {
       packages = [ "gbm" ]
     }
@@ -271,10 +275,12 @@ if (is_linux || is_chromeos) {
         ignore_libs = true
       }
     }
+}
 
     if (!rtc_link_pipewire) {
       # When libpipewire is not directly linked, use stubs to allow for dlopening of
       # the binary.
+      if (!build_with_mozilla) {
       generate_stubs("pipewire_stubs") {
         configs = [
           "../../:common_config",
@@ -296,10 +302,13 @@ if (is_linux || is_chromeos) {
           macro_deps = [ "../../rtc_base/system:no_cfi_icall" ]
         }
       }
+      }
     }
 
     config("pipewire_config") {
-      defines = [ "WEBRTC_USE_PIPEWIRE" ]
+      if (!build_with_mozilla) {
+        defines = [ "WEBRTC_USE_PIPEWIRE" ]
+      }
       if (!rtc_link_pipewire) {
         defines += [ "WEBRTC_DLOPEN_PIPEWIRE" ]
       }
@@ -317,6 +326,7 @@ if (is_linux || is_chromeos) {
 rtc_library("desktop_capture") {
   visibility = [ "*" ]
   defines = []
+  include_dirs = []
   deps = []
   public_configs = [ ":x11_config" ]
   sources = [
@@ -381,37 +391,12 @@ rtc_library("desktop_capture") {
     ]
     deps += [ ":desktop_capture_objc" ]
   }
-
-  if (build_with_mozilla) {
-    sources += [
-      "desktop_device_info.cc",
-      "desktop_device_info.h",
-    ]
-    if (is_win) {
-      sources += [
-        "app_capturer_win.cc",
-        "win/desktop_device_info_win.cc",
-        "win/win_shared.cc",
-      ]
-    }
-  }
   if (rtc_use_x11_extensions || rtc_use_pipewire) {
     sources += [
       "mouse_cursor_monitor_linux.cc",
       "screen_capturer_linux.cc",
       "window_capturer_linux.cc",
     ]
-
-    if (build_with_mozilla && (is_linux || is_chromeos)) {
-      sources += [
-        "app_capturer_linux.cc",
-        "linux/x11/app_capturer_x11.cc",
-        "linux/x11/desktop_device_info_linux.cc",
-        "linux/x11/desktop_device_info_linux.h",
-        "linux/x11/shared_x_util.cc",
-        "linux/x11/shared_x_util.h",
-      ]
-    }
   }
 
   if (rtc_use_x11_extensions) {
@@ -575,8 +560,11 @@ rtc_library("desktop_capture") {
     deps += [ "../../rtc_base:sanitizer" ]
   }
 
-  if (!build_with_mozilla) {
-    deps += [ "//third_party/libyuv" ]
+  deps += [ "//third_party/libyuv" ]
+  if (build_with_mozilla) {
+    include_dirs += [
+      "/third_party/pipewire",
+    ]
   }
 
   if (use_desktop_capture_differ_sse2) {
@@ -609,6 +597,19 @@ rtc_library("desktop_capture") {
       "linux/wayland/xdg_session_details.h",
     ]
 
+    if (build_with_mozilla) {
+    include_dirs += [
+      "/gfx/angle/checkout/include",
+      "/third_party/drm/drm",
+      "/third_party/drm/drm/include",
+      "/third_party/drm/drm/include/libdrm",
+      "/third_party/drm/libdrm",
+      "/third_party/gbm/gbm",
+      "/third_party/libepoxy/libepoxy/include",
+    ]
+    }
+
+   if (!build_with_mozilla) {
     configs += [
       ":gio",
       ":pipewire",
@@ -617,12 +618,27 @@ rtc_library("desktop_capture") {
       ":epoxy",
       ":libdrm",
     ]
-
-    if (!rtc_link_pipewire) {
-      deps += [ ":pipewire_stubs" ]
     }
 
-    public_configs += [ ":pipewire_config" ]
+    if (!rtc_link_pipewire) {
+      if (!build_with_mozilla) {
+      deps += [ ":pipewire_stubs" ]
+      }
+
+      if (!build_with_mozilla) {
+        configs += [
+          ":gio",
+          ":pipewire",
+        ]
+      } else {
+        defines += [ "WEBRTC_USE_PIPEWIRE" ]
+        include_dirs += [ "/third_party/pipewire" ]
+      }
+    }
+
+    if (!build_with_mozilla) {
+      public_configs += [ ":pipewire_config" ]
+    }
 
     deps += [ "../../rtc_base:sanitizer" ]
   }
