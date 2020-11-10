@@ -90,6 +90,7 @@ rtc_source_set("sctp_transport_factory_interface") {
   sources = [ "sctp_transport_factory_interface.h" ]
 }
 
+if (!build_with_mozilla) {
 rtc_source_set("stun_types") {
   visibility = [ "*" ]
   sources = [
@@ -108,6 +109,7 @@ rtc_source_set("stun_types") {
     "../../rtc_base:socket_address",
   ]
   absl_deps = [ "//third_party/abseil-cpp/absl/strings" ]
+}
 }
 
 if (rtc_include_tests) {

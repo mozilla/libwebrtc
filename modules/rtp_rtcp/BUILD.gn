@@ -263,7 +263,7 @@ rtc_library("rtp_rtcp") {
     "../../api:field_trials_view",
     "../../api:frame_transformer_interface",
     "../../api:function_view",
-    "../../api:libjingle_peerconnection_api",
+    #"../../api:libjingle_peerconnection_api",
     "../../api:rtp_headers",
     "../../api:rtp_packet_info",
     "../../api:rtp_parameters",
@@ -452,6 +452,7 @@ rtc_library("fec_test_helper") {
   ]
 }
 
+if (rtc_include_tests) {
 rtc_library("mock_rtp_rtcp") {
   testonly = true
   public = [
@@ -468,6 +469,7 @@ rtc_library("mock_rtp_rtcp") {
     "../../test:test_support",
   ]
   absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
+}
 }
 
 rtc_library("rtp_packetizer_av1_test_helper") {

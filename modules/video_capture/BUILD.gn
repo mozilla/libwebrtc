@@ -40,7 +40,7 @@ rtc_library("video_capture_module") {
     "../../rtc_base:timeutils",
     "../../rtc_base/synchronization:mutex",
     "../../system_wrappers",
-    "//third_party/libyuv",
+    #"//third_party/libyuv",
   ]
   absl_deps = [ "//third_party/abseil-cpp/absl/strings" ]
 }

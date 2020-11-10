@@ -835,7 +835,7 @@ rtc_library("webrtc_opus_wrapper") {
   if (rtc_build_opus) {
     public_deps = [ rtc_opus_dir ]  # no-presubmit-check TODO(webrtc:8603)
   } else if (build_with_mozilla) {
-    include_dirs = [ getenv("DIST") + "/include/opus" ]
+    include_dirs = [ "/media/libopus/include" ]
   }
 
   deps = [
@@ -1231,6 +1231,7 @@ if (rtc_enable_protobuf) {
 }
 
 # Allow to re-use some test classes from chromium.
+if (rtc_include_tests) {
 rtc_library("audio_coding_modules_tests_shared") {
   testonly = true
   visibility = []
@@ -1281,6 +1282,7 @@ rtc_library("audio_coding_modules_tests_shared") {
     defines += [ "WEBRTC_NETEQ_UNITTEST_BITEXACT" ]
     deps += [ ":neteq_unittest_proto" ]
   }
+}
 }
 
 if (rtc_include_tests) {
