@@ -622,6 +622,7 @@ if (rtc_include_tests) {
   }
 }
 
+if (rtc_include_tests) {
 rtc_library("audioproc_test_utils") {
   visibility = [ "*" ]
   testonly = true
@@ -662,4 +663,5 @@ rtc_library("audioproc_test_utils") {
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/types:optional",
   ]
+}
 }

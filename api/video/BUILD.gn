@@ -76,6 +76,9 @@ rtc_library("video_frame") {
     "../../rtc_base/system:rtc_export",
     "//third_party/libyuv",
   ]
+  if (build_with_mozilla) {
+    deps -= [ "//third_party/libyuv" ]
+  }
   absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
 }
 
@@ -104,6 +107,9 @@ rtc_library("video_frame_i010") {
     "../../rtc_base/memory:aligned_malloc",
     "//third_party/libyuv",
   ]
+  if (build_with_mozilla) {
+    deps -= [ "//third_party/libyuv" ]
+  }
 }
 
 rtc_source_set("recordable_encoded_frame") {

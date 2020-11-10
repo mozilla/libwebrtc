@@ -229,6 +229,12 @@ rtc_library("audio_device_impl") {
     "include/test_audio_device.cc",
     "include/test_audio_device.h",
   ]
+  if (build_with_mozilla) {
+    sources -= [
+      "include/test_audio_device.cc",
+      "include/test_audio_device.h",
+    ]
+  }
 
   if (build_with_mozilla) {
     sources += [
@@ -388,6 +394,7 @@ if (is_mac) {
   }
 }
 
+if (rtc_include_tests) {
 rtc_source_set("mock_audio_device") {
   visibility = [ "*" ]
   testonly = true
@@ -403,6 +410,7 @@ rtc_source_set("mock_audio_device") {
     "../../api:make_ref_counted",
     "../../test:test_support",
   ]
+}
 }
 
 if (rtc_include_tests && !build_with_chromium) {
