@@ -42,6 +42,9 @@ rtc_library("video_capture_module") {
     "../../system_wrappers",
     "//third_party/libyuv",
   ]
+  if (build_with_mozilla) {
+    deps -= [ "//third_party/libyuv" ]
+  }
   absl_deps = [ "//third_party/abseil-cpp/absl/strings" ]
 }
 

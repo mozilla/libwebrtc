@@ -66,6 +66,12 @@ rtc_library("libaom_av1_decoder") {
       "//third_party/libaom",
       "//third_party/libyuv",
     ]
+    if (build_with_mozilla) {
+      deps -= [
+        "//third_party/libaom",
+        "//third_party/libyuv",
+      ]
+    }
     absl_deps += [ "//third_party/abseil-cpp/absl/types:optional" ]
   } else {
     sources = [ "libaom_av1_decoder_absent.cc" ]

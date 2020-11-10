@@ -40,6 +40,7 @@ rtc_library("fifo_buffer") {
   ]
 }
 
+if (rtc_include_tests) {
 rtc_library("unittests") {
   testonly = true
   sources = [
@@ -53,6 +54,7 @@ rtc_library("unittests") {
     ":fifo_buffer",
     "../../test:test_support",
   ]
+}
 }
 
 rtc_source_set("always_valid_pointer") {

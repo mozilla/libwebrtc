@@ -36,6 +36,9 @@ rtc_library("video_processing") {
     "../../system_wrappers",
     "//third_party/libyuv",
   ]
+  if (build_with_mozilla) {
+    deps -= [ "//third_party/libyuv" ]
+  }
   if (build_video_processing_sse2) {
     deps += [ ":video_processing_sse2" ]
   }

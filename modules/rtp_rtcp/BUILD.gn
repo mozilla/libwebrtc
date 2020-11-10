@@ -325,6 +325,9 @@ rtc_library("rtp_rtcp") {
     "../remote_bitrate_estimator",
     "../video_coding:codec_globals_headers",
   ]
+  if (build_with_mozilla) {
+    deps -= [ "../../api:libjingle_peerconnection_api" ]
+  }
   absl_deps = [
     "//third_party/abseil-cpp/absl/algorithm:container",
     "//third_party/abseil-cpp/absl/base:core_headers",
@@ -449,6 +452,7 @@ rtc_library("fec_test_helper") {
   ]
 }
 
+if (rtc_include_tests) {
 rtc_library("mock_rtp_rtcp") {
   testonly = true
   public = [
@@ -468,6 +472,7 @@ rtc_library("mock_rtp_rtcp") {
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/types:optional",
   ]
+}
 }
 
 rtc_library("rtp_packetizer_av1_test_helper") {
