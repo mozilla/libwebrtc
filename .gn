@@ -68,4 +68,6 @@ default_args = {
 
   # Prevent jsoncpp to pass -Wno-deprecated-declarations to users
   jsoncpp_no_deprecated_declarations = false
+
+  use_custom_libcxx = false
 }

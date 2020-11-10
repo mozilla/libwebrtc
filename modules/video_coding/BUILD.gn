@@ -6,7 +6,7 @@
 # in the file PATENTS.  All contributing project authors may
 # be found in the AUTHORS file in the root of the source tree.
 
-import("//third_party/libaom/options.gni")
+#import("//third_party/libaom/options.gni")
 import("../../webrtc.gni")
 
 rtc_library("encoded_frame") {
@@ -165,6 +165,8 @@ rtc_library("video_coding") {
   sources = [
     "decoder_database.cc",
     "decoder_database.h",
+    "event_wrapper.cc",
+    "event_wrapper.h",
     "fec_controller_default.cc",
     "fec_controller_default.h",
     "fec_rate_table.h",
@@ -493,7 +495,7 @@ rtc_library("webrtc_h264") {
     "../../rtc_base/system:rtc_export",
     "../../system_wrappers:field_trial",
     "../../system_wrappers:metrics",
-    "//third_party/libyuv",
+    #"//third_party/libyuv",
   ]
   absl_deps = [
     "//third_party/abseil-cpp/absl/container:inlined_vector",
@@ -605,7 +607,7 @@ rtc_library("webrtc_vp8") {
     "../../system_wrappers:field_trial",
     "../../system_wrappers:metrics",
     "svc:scalability_mode_util",
-    "//third_party/libyuv",
+    #"//third_party/libyuv",
   ]
   absl_deps = [
     "//third_party/abseil-cpp/absl/algorithm:container",
@@ -872,7 +874,7 @@ if (rtc_include_tests) {
       "../../test:video_test_common",
       "../../test:video_test_support",
       "../rtp_rtcp:rtp_rtcp_format",
-      "//third_party/libyuv",
+      #"//third_party/libyuv",
     ]
     absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
   }
@@ -1035,7 +1037,7 @@ if (rtc_include_tests) {
       "../rtp_rtcp:rtp_rtcp_format",
       "codecs/av1:dav1d_decoder",
       "codecs/av1:libaom_av1_decoder",
-      "//third_party/libyuv",
+      #"//third_party/libyuv",
     ]
     absl_deps = [
       "//third_party/abseil-cpp/absl/memory",

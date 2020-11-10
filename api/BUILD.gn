@@ -35,7 +35,7 @@ rtc_source_set("callfactory_api") {
   ]
 }
 
-if (!build_with_chromium) {
+if (!build_with_chromium && !build_with_mozilla) {
   rtc_library("create_peerconnection_factory") {
     visibility = [ "*" ]
     allow_poison = [ "default_task_queue" ]
@@ -191,6 +191,7 @@ rtc_library("dtls_transport_interface") {
   absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
 }
 
+if (!build_with_mozilla) {
 rtc_library("libjingle_peerconnection_api") {
   visibility = [ "*" ]
   cflags = []
@@ -297,6 +298,7 @@ rtc_library("libjingle_peerconnection_api") {
     "//third_party/abseil-cpp/absl/types:optional",
   ]
 }
+}
 
 rtc_source_set("frame_transformer_interface") {
   visibility = [ "*" ]
@@ -383,6 +385,7 @@ rtc_source_set("make_ref_counted") {
   deps = [ "../rtc_base:refcount" ]
 }
 
+if (!build_with_mozilla) {
 rtc_source_set("video_quality_test_fixture_api") {
   visibility = [ "*" ]
   testonly = true
@@ -420,6 +423,7 @@ rtc_source_set("video_quality_analyzer_api") {
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/types:optional",
   ]
+}
 }
 
 rtc_source_set("track_id_stream_info_map") {
@@ -499,6 +503,7 @@ rtc_source_set("peer_network_dependencies") {
   ]
 }
 
+if (!build_with_mozilla) {
 rtc_source_set("peer_connection_quality_test_fixture_api") {
   visibility = [ "*" ]
   testonly = true
@@ -573,6 +578,7 @@ rtc_library("test_dependency_factory") {
     "../rtc_base:platform_thread_types",
   ]
 }
+}
 
 if (rtc_include_tests) {
   # TODO(srte): Move to network_emulation sub directory.
@@ -625,6 +631,7 @@ if (rtc_include_tests) {
   }
 }
 
+if (!build_with_mozilla) {
 rtc_library("create_frame_generator") {
   visibility = [ "*" ]
   testonly = true
@@ -656,6 +663,7 @@ rtc_library("create_peer_connection_quality_test_frame_generator") {
     "../test:fileutils",
   ]
   absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
+}
 }
 
 rtc_source_set("libjingle_logging_api") {
@@ -827,6 +835,7 @@ rtc_source_set("refcountedbase") {
   ]
 }
 
+if (!build_with_mozilla) {
 rtc_library("ice_transport_factory") {
   visibility = [ "*" ]
   sources = [
@@ -845,6 +854,7 @@ rtc_library("ice_transport_factory") {
     "../rtc_base/system:rtc_export",
     "rtc_event_log:rtc_event_log",
   ]
+}
 }
 
 rtc_library("neteq_simulator_api") {

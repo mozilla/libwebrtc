@@ -83,6 +83,7 @@ rtc_source_set("tick_timer") {
   ]
 }
 
+if (rtc_include_tests) {
 rtc_source_set("tick_timer_unittest") {
   visibility = [ "*" ]
   testonly = true
@@ -92,4 +93,5 @@ rtc_source_set("tick_timer_unittest") {
     "../../test:test_support",
     "//testing/gtest",
   ]
+}
 }
