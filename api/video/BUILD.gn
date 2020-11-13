@@ -78,6 +78,10 @@ rtc_library("video_frame") {
   ]
   if (build_with_mozilla) {
     deps -= [ "//third_party/libyuv" ]
+    include_dirs = [
+      "/media/libyuv",
+      "/media/libyuv/libyuv/include",
+    ]
   }
   absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
 }
@@ -109,6 +113,10 @@ rtc_library("video_frame_i010") {
   ]
   if (build_with_mozilla) {
     deps -= [ "//third_party/libyuv" ]
+    include_dirs = [
+      "/media/libyuv",
+      "/media/libyuv/libyuv/include",
+    ]
   }
 }
 

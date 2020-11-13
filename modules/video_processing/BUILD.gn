@@ -38,6 +38,10 @@ rtc_library("video_processing") {
   ]
   if (build_with_mozilla) {
     deps -= [ "//third_party/libyuv" ]
+    include_dirs = [
+      "/media/libyuv",
+      "/media/libyuv/libyuv/include",
+    ]
   }
   if (build_video_processing_sse2) {
     deps += [ ":video_processing_sse2" ]
