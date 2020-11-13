@@ -76,6 +76,10 @@ rtc_library("video_frame") {
     "../../rtc_base/system:rtc_export",
     #"//third_party/libyuv",
   ]
+  include_dirs = [
+    "/media/libyuv",
+    "/media/libyuv/libyuv/include",
+  ]
   absl_deps = [ "//third_party/abseil-cpp/absl/types:optional" ]
 }
 
@@ -103,6 +107,10 @@ rtc_library("video_frame_i010") {
     "../../rtc_base:refcount",
     "../../rtc_base/memory:aligned_malloc",
     #"//third_party/libyuv",
+  ]
+  include_dirs = [
+    "/media/libyuv",
+    "/media/libyuv/libyuv/include",
   ]
 }
 
