@@ -703,9 +703,9 @@ void ChannelSend::SetSendAudioLevelIndicationStatus(bool enable, int id) {
   RTC_DCHECK_RUN_ON(&worker_thread_checker_);
   _includeAudioLevelIndication = enable;
   if (enable) {
-    rtp_rtcp_->RegisterRtpHeaderExtension(AudioLevel::Uri(), id);
+    rtp_rtcp_->RegisterRtpHeaderExtension(webrtc::AudioLevel::Uri(), id);
   } else {
-    rtp_rtcp_->DeregisterSendRtpHeaderExtension(AudioLevel::Uri());
+    rtp_rtcp_->DeregisterSendRtpHeaderExtension(webrtc::AudioLevel::Uri());
   }
 }
 
