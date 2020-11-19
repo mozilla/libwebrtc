@@ -138,7 +138,7 @@ declare_args() {
   rtc_use_pipewire = is_linux && use_sysroot
 
   # Set this to link PipeWire and required libraries directly instead of using the dlopen.
-  rtc_link_pipewire = false
+  rtc_link_pipewire = true
 
   # Enable to use the Mozilla internal settings.
   build_with_mozilla = false
