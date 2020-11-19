@@ -11,6 +11,10 @@ import("//build/config/ui.gni")
 import("//tools/generate_stubs/rules.gni")
 import("../../webrtc.gni")
 
+if (build_with_mozilla) {
+  defines = [ "MULTI_MONITOR_SCREENSHARE" ]
+}
+
 use_desktop_capture_differ_sse2 = current_cpu == "x86" || current_cpu == "x64"
 
 config("x11_config") {
@@ -510,7 +514,6 @@ rtc_library("desktop_capture_generic") {
   }
 
   if (rtc_use_pipewire) {
-    include_dirs = [ "/third_party/libwebrtc/third_party/pipewire" ]
     sources += [
       "linux/base_capturer_pipewire.cc",
       "linux/base_capturer_pipewire.h",
@@ -529,6 +532,16 @@ rtc_library("desktop_capture_generic") {
       configs += [ ":pipewire" ]
     } else {
       deps += [ ":pipewire_stubs" ]
+
+      if (!build_with_mozilla) {
+        configs += [
+          ":gio",
+          ":pipewire",
+        ]
+      } else {
+        defines += [ "WEBRTC_USE_PIPEWIRE" ]
+        include_dirs += [ "/third_party/pipewire" ]
+      }
     }
   }
 }
