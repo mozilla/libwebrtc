@@ -50,10 +50,12 @@ std::vector<SdpVideoFormat> InternalDecoderFactory::GetSupportedFormats()
   for (const SdpVideoFormat& h264_format : SupportedH264DecoderCodecs())
     formats.push_back(h264_format);
 
+#if !defined(WEBRTC_MOZILLA_BUILD)
   if (kDav1dIsIncluded) {
     formats.push_back(SdpVideoFormat::AV1Profile0());
     formats.push_back(SdpVideoFormat::AV1Profile1());
   }
+#endif
 
   return formats;
 }
