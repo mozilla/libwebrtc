@@ -49,6 +49,7 @@ std::vector<SdpVideoFormat> InternalDecoderFactory::GetSupportedFormats()
   for (const SdpVideoFormat& h264_format : SupportedH264DecoderCodecs())
     formats.push_back(h264_format);
 
+#if !defined(WEBRTC_MOZILLA_BUILD)
   if (kDav1dIsIncluded) {
     formats.push_back(SdpVideoFormat(cricket::kAv1CodecName));
     formats.push_back(
@@ -56,6 +57,7 @@ std::vector<SdpVideoFormat> InternalDecoderFactory::GetSupportedFormats()
                        {{cricket::kAv1FmtpProfile,
                          AV1ProfileToString(AV1Profile::kProfile1).data()}}));
   }
+#endif
 
   return formats;
 }
