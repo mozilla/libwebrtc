@@ -50,10 +50,10 @@ std::vector<SdpVideoFormat> InternalDecoderFactory::GetSupportedFormats()
   for (const SdpVideoFormat& h264_format : SupportedH264DecoderCodecs())
     formats.push_back(h264_format);
 
-  if (kIsLibaomAv1DecoderSupported ||
-      (kDav1dIsIncluded && field_trial::IsEnabled(kDav1dFieldTrial))) {
-    formats.push_back(SdpVideoFormat(cricket::kAv1CodecName));
-  }
+  //if (kIsLibaomAv1DecoderSupported ||
+  //    (kDav1dIsIncluded && field_trial::IsEnabled(kDav1dFieldTrial))) {
+  //  formats.push_back(SdpVideoFormat(cricket::kAv1CodecName));
+  //}
 
   return formats;
 }
@@ -96,10 +96,10 @@ std::unique_ptr<VideoDecoder> InternalDecoderFactory::CreateVideoDecoder(
     return CreateDav1dDecoder();
   }
 
-  if (absl::EqualsIgnoreCase(format.name, cricket::kAv1CodecName) &&
-      kIsLibaomAv1DecoderSupported) {
-    return CreateLibaomAv1Decoder();
-  }
+  //if (absl::EqualsIgnoreCase(format.name, cricket::kAv1CodecName) &&
+  //    kIsLibaomAv1DecoderSupported) {
+  //  return CreateLibaomAv1Decoder();
+  //}
 
   RTC_DCHECK_NOTREACHED();
   return nullptr;

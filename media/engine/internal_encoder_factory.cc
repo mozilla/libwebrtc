@@ -34,8 +34,8 @@ std::vector<SdpVideoFormat> InternalEncoderFactory::SupportedFormats() {
     supported_codecs.push_back(format);
   for (const webrtc::SdpVideoFormat& format : webrtc::SupportedH264Codecs())
     supported_codecs.push_back(format);
-  if (kIsLibaomAv1EncoderSupported)
-    supported_codecs.push_back(SdpVideoFormat(cricket::kAv1CodecName));
+  //if (kIsLibaomAv1EncoderSupported)
+  //  supported_codecs.push_back(SdpVideoFormat(cricket::kAv1CodecName));
   return supported_codecs;
 }
 
@@ -52,9 +52,9 @@ std::unique_ptr<VideoEncoder> InternalEncoderFactory::CreateVideoEncoder(
     return VP9Encoder::Create(cricket::VideoCodec(format));
   if (absl::EqualsIgnoreCase(format.name, cricket::kH264CodecName))
     return H264Encoder::Create(cricket::VideoCodec(format));
-  if (kIsLibaomAv1EncoderSupported &&
-      absl::EqualsIgnoreCase(format.name, cricket::kAv1CodecName))
-    return CreateLibaomAv1EncoderIfSupported();
+  //if (kIsLibaomAv1EncoderSupported &&
+  //    absl::EqualsIgnoreCase(format.name, cricket::kAv1CodecName))
+  //  return CreateLibaomAv1EncoderIfSupported();
   RTC_LOG(LS_ERROR) << "Trying to created encoder of unsupported format "
                     << format.name;
   return nullptr;
