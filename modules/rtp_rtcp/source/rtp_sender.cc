@@ -106,7 +106,9 @@ bool IsNonVolatile(RTPExtensionType type) {
   switch (type) {
     case kRtpExtensionTransmissionTimeOffset:
     case kRtpExtensionAudioLevel:
+#if !defined(WEBRTC_MOZILLA_BUILD)
     case kRtpExtensionCsrcAudioLevel:
+#endif
     case kRtpExtensionAbsoluteSendTime:
     case kRtpExtensionTransportSequenceNumber:
     case kRtpExtensionTransportSequenceNumber02:
@@ -130,10 +132,12 @@ bool IsNonVolatile(RTPExtensionType type) {
     case kRtpExtensionNumberOfExtensions:
       RTC_DCHECK_NOTREACHED();
       return false;
+#if defined(WEBRTC_MOZILLA_BUILD)
     case kRtpExtensionCsrcAudioLevel:
       // TODO: Mozilla implement for CsrcAudioLevel
       RTC_CHECK(false);
       return false;
+#endif
   }
   RTC_CHECK_NOTREACHED();
 }
