@@ -33,7 +33,6 @@
 #include "modules/rtp_rtcp/source/rtcp_packet/report_block.h"
 #include "modules/rtp_rtcp/source/rtcp_packet/tmmb_item.h"
 #include "modules/rtp_rtcp/source/rtp_rtcp_interface.h"
-#include "modules/rtp_rtcp/source/rtp_rtcp_config.h"
 #include "rtc_base/random.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/thread_annotations.h"
@@ -142,11 +141,6 @@ class RTCPSender final {
 
   bool TimeToSendRTCPReport(bool sendKeyframeBeforeRTP = false) const
       RTC_LOCKS_EXCLUDED(mutex_rtcp_sender_);
-
-  bool GetSendReportMetadata(const uint32_t sendReport,
-                             uint64_t *timeOfSend,
-                             uint32_t *packetCount,
-                             uint64_t *octetCount);
 
   int32_t SendRTCP(const FeedbackState& feedback_state,
                    RTCPPacketType packetType,
@@ -270,16 +264,6 @@ class RTCPSender final {
 
   ReceiveStatisticsProvider* receive_statistics_
       RTC_GUARDED_BY(mutex_rtcp_sender_);
-
-  // Sent
-  uint32_t last_send_report_[RTCP_NUMBER_OF_SR] RTC_GUARDED_BY(
-      mutex_rtcp_sender_);  // allow packet loss and RTT above 1 sec
-  int64_t last_rtcp_time_[RTCP_NUMBER_OF_SR] RTC_GUARDED_BY(
-      mutex_rtcp_sender_);
-  uint32_t lastSRPacketCount_[RTCP_NUMBER_OF_SR] RTC_GUARDED_BY(
-      mutex_rtcp_sender_);
-  uint64_t lastSROctetCount_[RTCP_NUMBER_OF_SR] RTC_GUARDED_BY(
-      mutex_rtcp_sender_);
 
   // send CSRCs
   std::vector<uint32_t> csrcs_ RTC_GUARDED_BY(mutex_rtcp_sender_);
