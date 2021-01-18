@@ -187,7 +187,9 @@ void RtpPacket::ZeroMutableExtensions() {
         break;
       }
       case RTPExtensionType::kRtpExtensionAudioLevel:
+#if !defined(WEBRTC_MOZILLA_BUILD)
       case RTPExtensionType::kRtpExtensionCsrcAudioLevel:
+#endif
       case RTPExtensionType::kRtpExtensionAbsoluteCaptureTime:
       case RTPExtensionType::kRtpExtensionColorSpace:
       case RTPExtensionType::kRtpExtensionGenericFrameDescriptor:
@@ -205,10 +207,12 @@ void RtpPacket::ZeroMutableExtensions() {
         // Non-mutable extension. Don't change it.
         break;
       }
+#if defined(WEBRTC_MOZILLA_BUILD)
       case RTPExtensionType::kRtpExtensionCsrcAudioLevel: {
         // TODO: This is a Mozilla addition, we need to add a handler for this.
         RTC_CHECK(false);
       }
+#endif
     }
   }
 }
