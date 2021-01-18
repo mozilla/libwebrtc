@@ -309,6 +309,11 @@ struct RTC_EXPORT RtpExtension {
   static constexpr char kAudioLevelUri[] =
       "urn:ietf:params:rtp-hdrext:ssrc-audio-level";
 
+  // Header extension for Mixer-to-Client audio level indication, as defined in:
+  // https://tools.ietf.org/html/rfc6465
+  static constexpr char kCsrcAudioLevelUri[] =
+      "urn:ietf:params:rtp-hdrext:csrc-audio-level";
+
   // Header extension for RTP timestamp offset, see RFC 5450 for details:
   // http://tools.ietf.org/html/rfc5450
   static constexpr char kTimestampOffsetUri[] =
