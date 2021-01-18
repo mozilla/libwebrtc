@@ -205,6 +205,9 @@ class AudioReceiveStream : public MediaReceiveStream {
   // `WebRtcAudioReceiveStream::GetRtpParameters()`. See if we can remove it.
   virtual const std::vector<RtpExtension>& GetRtpExtensions() const = 0;
 
+  virtual void InsertAudioLevelForContributingSource(
+      const RtpPacketInfos& packet_infos) = 0;
+
  protected:
   virtual ~AudioReceiveStream() {}
 };
