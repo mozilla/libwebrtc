@@ -55,6 +55,31 @@ constexpr int64_t kMinRetransmissionWindowMs = 30;
 class RtpPacketSenderProxy;
 class TransportSequenceNumberProxy;
 
+class RtcpCounterObserver : public RtcpPacketTypeCounterObserver {
+ public:
+  explicit RtcpCounterObserver(uint32_t ssrc) : ssrc_(ssrc) {}
+
+  void RtcpPacketTypesCounterUpdated(
+      uint32_t ssrc, const RtcpPacketTypeCounter& packet_counter) override {
+    if (ssrc_ != ssrc) {
+      return;
+    }
+
+    MutexLock lock(&mutex_);
+    packet_counter_ = packet_counter;
+  }
+
+  RtcpPacketTypeCounter GetCounts() {
+    MutexLock lock(&mutex_);
+    return packet_counter_;
+  }
+
+ private:
+  Mutex mutex_;
+  const uint32_t ssrc_;
+  RtcpPacketTypeCounter packet_counter_;
+};
+
 class ChannelSend : public ChannelSendInterface,
                     public AudioPacketizationCallback,  // receive encoded
                                                         // packets from the ACM
@@ -206,6 +231,8 @@ class ChannelSend : public ChannelSendInterface,
   RmsLevel rms_level_ RTC_GUARDED_BY(encoder_queue_);
   bool input_mute_ RTC_GUARDED_BY(volume_settings_mutex_) = false;
   bool previous_frame_muted_ RTC_GUARDED_BY(encoder_queue_) = false;
+
+  const std::unique_ptr<RtcpCounterObserver> rtcp_counter_observer_;
 
   PacketRouter* packet_router_ RTC_GUARDED_BY(&worker_thread_checker_) =
       nullptr;
@@ -387,6 +414,7 @@ ChannelSend::ChannelSend(
     const FieldTrialsView& field_trials)
     : ssrc_(ssrc),
       event_log_(rtc_event_log),
+      rtcp_counter_observer_(new RtcpCounterObserver(ssrc)),
       rtp_packet_pacer_proxy_(new RtpPacketSenderProxy()),
       retransmission_rate_limiter_(
           new RateLimiter(clock, kMaxRetransmissionWindowMs)),
@@ -411,6 +439,8 @@ ChannelSend::ChannelSend(
 
   configuration.event_log = event_log_;
   configuration.rtt_stats = rtcp_rtt_stats;
+  configuration.rtcp_packet_type_counter_observer =
+      rtcp_counter_observer_.get();
   if (field_trials.IsDisabled("WebRTC-DisableRtxRateLimiter")) {
     configuration.retransmission_rate_limiter =
         retransmission_rate_limiter_.get();
@@ -673,6 +703,7 @@ CallSendStatistics ChannelSend::GetRTCPStatistics() const {
   RTC_DCHECK_RUN_ON(&worker_thread_checker_);
   CallSendStatistics stats = {0};
   stats.rttMs = GetRTT();
+  stats.rtcp_packet_type_counts = rtcp_counter_observer_->GetCounts();
 
   StreamDataCounters rtp_stats;
   StreamDataCounters rtx_stats;
