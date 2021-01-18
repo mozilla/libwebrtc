@@ -56,6 +56,31 @@ class RtpPacketSenderProxy;
 class TransportSequenceNumberProxy;
 class VoERtcpObserver;
 
+class RtcpCounterObserver : public RtcpPacketTypeCounterObserver {
+ public:
+  explicit RtcpCounterObserver(uint32_t ssrc) : ssrc_(ssrc) {}
+
+  void RtcpPacketTypesCounterUpdated(
+      uint32_t ssrc, const RtcpPacketTypeCounter& packet_counter) override {
+    if (ssrc_ != ssrc) {
+      return;
+    }
+
+    MutexLock lock(&mutex_);
+    packet_counter_ = packet_counter;
+  }
+
+  RtcpPacketTypeCounter GetCounts() {
+    MutexLock lock(&mutex_);
+    return packet_counter_;
+  }
+
+ private:
+  Mutex mutex_;
+  const uint32_t ssrc_;
+  RtcpPacketTypeCounter packet_counter_;
+};
+
 class ChannelSend : public ChannelSendInterface,
                     public AudioPacketizationCallback,  // receive encoded
                                                         // packets from the ACM
@@ -210,6 +235,8 @@ class ChannelSend : public ChannelSendInterface,
 
   // RtcpBandwidthObserver
   const std::unique_ptr<VoERtcpObserver> rtcp_observer_;
+
+  const std::unique_ptr<RtcpCounterObserver> rtcp_counter_observer_;
 
   PacketRouter* packet_router_ RTC_GUARDED_BY(&worker_thread_checker_) =
       nullptr;
@@ -469,6 +496,7 @@ ChannelSend::ChannelSend(
       previous_frame_muted_(false),
       _includeAudioLevelIndication(false),
       rtcp_observer_(new VoERtcpObserver(this)),
+      rtcp_counter_observer_(new RtcpCounterObserver(ssrc)),
       feedback_observer_(feedback_observer),
       rtp_packet_pacer_proxy_(new RtpPacketSenderProxy()),
       retransmission_rate_limiter_(
@@ -493,6 +521,8 @@ ChannelSend::ChannelSend(
 
   configuration.event_log = event_log_;
   configuration.rtt_stats = rtcp_rtt_stats;
+  configuration.rtcp_packet_type_counter_observer =
+      rtcp_counter_observer_.get();
   configuration.retransmission_rate_limiter =
       retransmission_rate_limiter_.get();
   configuration.extmap_allow_mixed = extmap_allow_mixed;
@@ -770,6 +800,7 @@ CallSendStatistics ChannelSend::GetRTCPStatistics() const {
   RTC_DCHECK_RUN_ON(&worker_thread_checker_);
   CallSendStatistics stats = {0};
   stats.rttMs = GetRTT();
+  stats.rtcp_packet_type_counts = rtcp_counter_observer_->GetCounts();
 
   StreamDataCounters rtp_stats;
   StreamDataCounters rtx_stats;
