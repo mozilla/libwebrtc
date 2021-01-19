@@ -195,7 +195,7 @@ class ModuleRtpRtcpImpl : public RtpRtcp, public RTCPReceiver::ModuleRtpRtcp {
 
   void RemoteRTCPSenderInfo(uint32_t* packet_count,
                             uint32_t* octet_count,
-                            NtpTime* ntp_timestamp) const override;
+                            int64_t* ntp_timestamp_ms) const override;
 
   // A snapshot of the most recent Report Block with additional data of
   // interest to statistics. Used to implement RTCRemoteInboundRtpStreamStats.
