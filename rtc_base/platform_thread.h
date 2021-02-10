@@ -18,7 +18,12 @@
 #include "absl/types/optional.h"
 #include "rtc_base/platform_thread_types.h"
 
+#include "rtc_base/deprecated/recursive_critical_section.h"
+
 namespace rtc {
+
+// Bug 1691641
+class PlatformUIThread;
 
 enum class ThreadPriority {
   kLow = 1,
@@ -110,6 +115,8 @@ class PlatformThread final {
 
   absl::optional<Handle> handle_;
   bool joinable_ = false;
+  // Bug 1691641
+  friend PlatformUIThread;
 };
 
 }  // namespace rtc
