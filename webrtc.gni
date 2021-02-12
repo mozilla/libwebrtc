@@ -266,7 +266,7 @@ declare_args() {
 
   # Chromium uses its own IO handling, so the internal ADM is only built for
   # standalone WebRTC.
-  rtc_include_internal_audio_device = !build_with_chromium
+  rtc_include_internal_audio_device = !build_with_chromium && !build_with_mozilla
 
   # Set this to true to enable the avx2 support in webrtc.
   # TODO: Make sure that AVX2 works also for non-clang compilers.
