@@ -445,6 +445,7 @@ config("common_config") {
 if (is_mac) {
 config("common_objc") {
   frameworks = [ "Foundation.framework" ]
+  cflags = [ "-fobjc-arc" ]
 }
 }
 

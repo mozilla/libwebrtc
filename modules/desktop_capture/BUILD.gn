@@ -315,8 +315,10 @@ if (is_linux || is_chromeos) {
 rtc_library("desktop_capture") {
   visibility = [ "*" ]
   defines = []
+  include_dirs = []
   if (build_with_mozilla) {
     defines += [ "MULTI_MONITOR_SCREENSHARE" ]
+    include_dirs += [ "/media/libyuv/libyuv/include" ]
   }
   deps = []
   public_configs = [ ":x11_config" ]
@@ -382,7 +384,7 @@ rtc_library("desktop_capture") {
     deps += [ ":desktop_capture_objc" ]
   }
   if (rtc_use_x11_extensions || rtc_use_pipewire) {
-    include_dirs = [ "/third_party/libwebrtc/third_party/pipewire" ]
+    include_dirs += [ "/third_party/libwebrtc/third_party/pipewire" ]
     sources += [
       "mouse_cursor_monitor_linux.cc",
       "screen_capturer_linux.cc",
