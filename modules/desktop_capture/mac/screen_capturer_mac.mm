@@ -357,7 +357,8 @@ bool ScreenCapturerMac::GetSourceList(SourceList* screens) {
   for (MacDisplayConfigurations::iterator it = desktop_config_.displays.begin();
        it != desktop_config_.displays.end();
        ++it) {
-    screens->push_back({it->id, std::string()});
+    Source value = {it->id, 0, std::string()};
+    screens->push_back(value);
   }
   return true;
 }
