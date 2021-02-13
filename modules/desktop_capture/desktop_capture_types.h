@@ -16,6 +16,10 @@
 #endif
 #include <stdint.h>
 
+#ifdef XP_WIN
+typedef int pid_t;
+#endif
+
 namespace webrtc {
 
 enum class CaptureType { kWindow, kScreen };
@@ -48,10 +52,6 @@ const ScreenId kInvalidScreenId = -2;
 
 typedef intptr_t ProcessId;
 const ProcessId DesktopProcessId = 0;
-
-#ifdef XP_WIN
-typedef int pid_t;
-#endif
 
 // Integers to attach to each DesktopFrame to differentiate the generator of
 // the frame. The entries in this namespace should remain in sync with the
