@@ -1255,7 +1255,7 @@ void RtpVideoStreamReceiver2::StartReceive() {
     // Change REMB candidate egibility.
     packet_router_->RemoveReceiveRtpModule(rtp_rtcp_.get());
     packet_router_->AddReceiveRtpModule(rtp_rtcp_.get(),
-                                        /*remb_candidate=*/true);
+                                        /*remb_candidate=*/config_.rtp.remb);
   }
   receiving_ = true;
 }
