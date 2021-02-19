@@ -188,6 +188,14 @@ class NetworkLinkRtcpObserver {
   virtual void OnRttUpdate(Timestamp receive_time, TimeDelta rtt) {}
 };
 
+class RtcpEventObserver {
+ public:
+  virtual void OnRtcpBye() = 0;
+  virtual void OnRtcpTimeout() = 0;
+
+  virtual ~RtcpEventObserver() {}
+};
+
 // NOTE! `kNumMediaTypes` must be kept in sync with RtpPacketMediaType!
 static constexpr size_t kNumMediaTypes = 5;
 enum class RtpPacketMediaType : size_t {

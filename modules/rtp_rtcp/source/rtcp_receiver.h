@@ -361,6 +361,7 @@ class RTCPReceiver final {
   RegisteredSsrcs registered_ssrcs_;
 
   NetworkLinkRtcpObserver* const network_link_rtcp_observer_;
+  RtcpEventObserver* const rtcp_event_observer_;
   RtcpIntraFrameObserver* const rtcp_intra_frame_observer_;
   RtcpLossNotificationObserver* const rtcp_loss_notification_observer_;
   NetworkStateEstimateObserver* const network_state_estimate_observer_;
