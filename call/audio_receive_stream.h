@@ -19,6 +19,7 @@
 #include "absl/types/optional.h"
 #include "api/audio_codecs/audio_decoder_factory.h"
 #include "api/call/transport.h"
+#include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "api/crypto/crypto_options.h"
 #include "api/rtp_parameters.h"
 #include "call/receive_stream.h"
@@ -117,6 +118,8 @@ class AudioReceiveStreamInterface : public MediaReceiveStreamInterface {
 
       // See NackConfig for description.
       NackConfig nack;
+
+      RtcpEventObserver* rtcp_event_observer = nullptr;
     } rtp;
 
     // Receive-side RTT.
