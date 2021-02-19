@@ -84,7 +84,8 @@ std::unique_ptr<RtpRtcp> CreateRtpRtcpModule(
     RtcpPacketTypeCounterObserver* rtcp_packet_type_counter_observer,
     RtcpCnameCallback* rtcp_cname_callback,
     bool non_sender_rtt_measurement,
-    uint32_t local_ssrc) {
+    uint32_t local_ssrc,
+    RtcpEventObserver* rtcp_event_observer) {
   RtpRtcpInterface::Configuration configuration;
   configuration.clock = clock;
   configuration.audio = false;
@@ -94,6 +95,7 @@ std::unique_ptr<RtpRtcp> CreateRtpRtcpModule(
   configuration.rtt_stats = rtt_stats;
   configuration.rtcp_packet_type_counter_observer =
       rtcp_packet_type_counter_observer;
+  configuration.rtcp_event_observer = rtcp_event_observer;
   configuration.rtcp_cname_callback = rtcp_cname_callback;
   configuration.local_media_ssrc = local_ssrc;
   configuration.non_sender_rtt_measurement = non_sender_rtt_measurement;
@@ -268,7 +270,8 @@ RtpVideoStreamReceiver::RtpVideoStreamReceiver(
           rtcp_packet_type_counter_observer,
           rtcp_cname_callback,
           config_.rtp.rtcp_xr.receiver_reference_time_report,
-          config_.rtp.local_ssrc)),
+          config_.rtp.local_ssrc,
+          config_.rtp.rtcp_event_observer)),
       complete_frame_callback_(complete_frame_callback),
       keyframe_request_sender_(keyframe_request_sender),
       // TODO(bugs.webrtc.org/10336): Let `rtcp_feedback_buffer_` communicate

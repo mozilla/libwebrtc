@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "api/call/transport.h"
+#include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "api/crypto/crypto_options.h"
 #include "api/rtp_headers.h"
 #include "api/rtp_parameters.h"
@@ -232,6 +233,8 @@ class VideoReceiveStream : public MediaReceiveStream {
       // meta data is expected to be present in generic frame descriptor
       // RTP header extension).
       std::set<int> raw_payload_types;
+
+      RtcpEventObserver* rtcp_event_observer = nullptr;
     } rtp;
 
     // Transport for outgoing packets (RTCP).
