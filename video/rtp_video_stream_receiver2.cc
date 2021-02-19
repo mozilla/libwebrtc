@@ -83,7 +83,8 @@ std::unique_ptr<ModuleRtpRtcpImpl2> CreateRtpRtcpModule(
     RtcpCnameCallback* rtcp_cname_callback,
     bool non_sender_rtt_measurement,
     uint32_t local_ssrc,
-    RtcEventLog* rtc_event_log) {
+    RtcEventLog* rtc_event_log,
+    RtcpEventObserver* rtcp_event_observer) {
   RtpRtcpInterface::Configuration configuration;
   configuration.clock = clock;
   configuration.audio = false;
@@ -95,6 +96,7 @@ std::unique_ptr<ModuleRtpRtcpImpl2> CreateRtpRtcpModule(
       rtcp_packet_type_counter_observer;
   configuration.rtcp_cname_callback = rtcp_cname_callback;
   configuration.local_media_ssrc = local_ssrc;
+  configuration.rtcp_event_observer = rtcp_event_observer;
   configuration.non_sender_rtt_measurement = non_sender_rtt_measurement;
   configuration.event_log = rtc_event_log;
 
@@ -275,7 +277,8 @@ RtpVideoStreamReceiver2::RtpVideoStreamReceiver2(
           rtcp_cname_callback,
           config_.rtp.rtcp_xr.receiver_reference_time_report,
           config_.rtp.local_ssrc,
-          event_log)),
+          event_log,
+          config_.rtp.rtcp_event_observer)),
       nack_periodic_processor_(nack_periodic_processor),
       complete_frame_callback_(complete_frame_callback),
       keyframe_request_method_(config_.rtp.keyframe_method),
