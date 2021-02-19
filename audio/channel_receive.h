@@ -28,6 +28,7 @@
 #include "call/rtp_packet_sink_interface.h"
 #include "call/syncable.h"
 #include "modules/audio_coding/include/audio_coding_module_typedefs.h"
+#include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "modules/rtp_rtcp/source/source_tracker.h"
 #include "system_wrappers/include/clock.h"
 
@@ -186,7 +187,8 @@ std::unique_ptr<ChannelReceiveInterface> CreateChannelReceive(
     absl::optional<AudioCodecPairId> codec_pair_id,
     rtc::scoped_refptr<FrameDecryptorInterface> frame_decryptor,
     const webrtc::CryptoOptions& crypto_options,
-    rtc::scoped_refptr<FrameTransformerInterface> frame_transformer);
+    rtc::scoped_refptr<FrameTransformerInterface> frame_transformer,
+    RtcpEventObserver* rtcp_event_observer);
 
 }  // namespace voe
 }  // namespace webrtc
