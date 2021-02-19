@@ -74,6 +74,9 @@ class RtpRtcpInterface : public RtcpFeedbackSenderInterface {
     // bandwidth estimation related message.
     NetworkLinkRtcpObserver* network_link_rtcp_observer = nullptr;
 
+    // Called when we receive a RTCP bye or timeout
+    RtcpEventObserver* rtcp_event_observer = nullptr;
+
     NetworkStateEstimateObserver* network_state_estimate_observer = nullptr;
 
     // DEPRECATED, transport_feedback_callback is no longer invoked by the RTP
