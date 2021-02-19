@@ -145,6 +145,7 @@ RTCPReceiver::RTCPReceiver(const RtpRtcpInterface::Configuration& config,
       rtp_rtcp_(owner),
       registered_ssrcs_(false, config),
       rtcp_bandwidth_observer_(config.bandwidth_callback),
+      rtcp_event_observer_(config.rtcp_event_observer),
       rtcp_intra_frame_observer_(config.intra_frame_callback),
       rtcp_loss_notification_observer_(config.rtcp_loss_notification_observer),
       network_state_estimate_observer_(config.network_state_estimate_observer),
@@ -174,6 +175,7 @@ RTCPReceiver::RTCPReceiver(const RtpRtcpInterface::Configuration& config,
       rtp_rtcp_(owner),
       registered_ssrcs_(true, config),
       rtcp_bandwidth_observer_(config.bandwidth_callback),
+      rtcp_event_observer_(config.rtcp_event_observer),
       rtcp_intra_frame_observer_(config.intra_frame_callback),
       rtcp_loss_notification_observer_(config.rtcp_loss_notification_observer),
       network_state_estimate_observer_(config.network_state_estimate_observer),
@@ -812,6 +814,10 @@ bool RTCPReceiver::HandleBye(const CommonHeader& rtcp_block) {
     return false;
   }
 
+  if (rtcp_event_observer_) {
+    rtcp_event_observer_->OnRtcpBye();
+  }
+
   // Clear our lists.
   rtts_.erase(bye.sender_ssrc());
   EraseIf(received_report_blocks_, [&](const auto& elem) {
@@ -1234,12 +1240,20 @@ std::vector<rtcp::TmmbItem> RTCPReceiver::TmmbrReceived() {
 }
 
 bool RTCPReceiver::RtcpRrTimeoutLocked(Timestamp now) {
-  return ResetTimestampIfExpired(now, last_received_rb_, report_interval_);
+  bool result = ResetTimestampIfExpired(now, last_received_rb_, report_interval_);
+  if (result && rtcp_event_observer_) {
+    rtcp_event_observer_->OnRtcpTimeout();
+  }
+  return result;
 }
 
 bool RTCPReceiver::RtcpRrSequenceNumberTimeoutLocked(Timestamp now) {
-  return ResetTimestampIfExpired(now, last_increased_sequence_number_,
+  bool result = ResetTimestampIfExpired(now, last_increased_sequence_number_,
                                  report_interval_);
+  if (result && rtcp_event_observer_) {
+    rtcp_event_observer_->OnRtcpTimeout();
+  }
+  return result;
 }
 
 }  // namespace webrtc
