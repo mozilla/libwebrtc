@@ -220,6 +220,9 @@ class VideoReceiveStreamInterface : public MediaReceiveStreamInterface {
       // disabled.
       KeyFrameReqMethod keyframe_method = KeyFrameReqMethod::kPliRtcp;
 
+      // See draft-alvestrand-rmcat-remb for information.
+      bool remb = false;
+
       bool tmmbr = false;
 
       // See LntfConfig for description.
