@@ -161,6 +161,8 @@ std::string VideoReceiveStreamInterface::Config::Rtp::ToString() const {
     ss << pt << ", ";
   }
   ss << '}';
+  ss << ", rtcp_event_observer: "
+     << (rtcp_event_observer ? "(rtcp_event_observer)" : "nullptr");
   ss << '}';
   return ss.str();
 }
