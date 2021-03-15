@@ -109,8 +109,6 @@ class AudioReceiveStream final : public webrtc::AudioReceiveStream,
   // AudioMixer::Source
   AudioFrameInfo GetAudioFrameWithInfo(int sample_rate_hz,
                                        AudioFrame* audio_frame) override;
-  void InsertAudioLevelForContributingSource(
-      const RtpPacketInfos& packet_infos) override;
   int Ssrc() const override;
   int PreferredSampleRate() const override;
 
