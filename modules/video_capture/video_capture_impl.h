@@ -97,6 +97,10 @@ class RTC_EXPORT VideoCaptureImpl : public VideoCaptureModule {
   rtc::RaceChecker capture_checker_;
   // current Device unique name;
   char* _deviceUniqueId RTC_GUARDED_BY(api_checker_);
+
+  // moved DeliverCapturedFrame to protected for VideoCaptureAndroid (mjf)
+  int32_t DeliverCapturedFrame(VideoFrame& captureFrame)
+      RTC_EXCLUSIVE_LOCKS_REQUIRED(api_lock_);
   Mutex api_lock_;
   // Should be set by platform dependent code in StartCapture.
   VideoCaptureCapability _requestedCapability RTC_GUARDED_BY(api_checker_);
@@ -104,8 +108,6 @@ class RTC_EXPORT VideoCaptureImpl : public VideoCaptureModule {
  private:
   void UpdateFrameCount();
   uint32_t CalculateFrameRate(int64_t now_ns);
-  int32_t DeliverCapturedFrame(VideoFrame& captureFrame)
-      RTC_EXCLUSIVE_LOCKS_REQUIRED(api_lock_);
   void DeliverRawFrame(uint8_t* videoFrame,
                        size_t videoFrameLength,
                        const VideoCaptureCapability& frameInfo,
