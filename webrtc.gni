@@ -35,6 +35,11 @@ if (is_mac) {
   import("//build/config/mac/rules.gni")
 }
 
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+
 # This declare_args is separated from the next one because args declared
 # in this one, can be read from the next one (args defined in the same
 # declare_args cannot be referenced in that scope).
@@ -1105,7 +1110,7 @@ if (is_mac || is_ios) {
   }
 }
 
-if (is_android) {
+if (is_android && !build_with_mozilla) {
   template("rtc_android_library") {
     android_library(target_name) {
       forward_variables_from(invoker,
