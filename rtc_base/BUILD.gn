@@ -1254,12 +1254,12 @@ rtc_library("rtc_base") {
     deps += [ ":win32" ]
   }
 
-  #if (is_posix || is_fuchsia) {
-  #  sources += [
-  #    "ifaddrs_converter.cc",
-  #    "ifaddrs_converter.h",
-  #  ]
-  #}
+  if (is_posix || is_fuchsia) {
+    sources += [
+      "ifaddrs_converter.cc",
+      "ifaddrs_converter.h",
+    ]
+  }
 
   if (is_nacl) {
     public_deps +=  # no-presubmit-check TODO(webrtc:8603)
