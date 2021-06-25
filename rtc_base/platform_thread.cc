@@ -19,6 +19,8 @@
 
 #include "rtc_base/checks.h"
 
+#include "MicroGeckoProfiler.h"
+
 namespace rtc {
 namespace {
 
@@ -181,6 +183,10 @@ PlatformThread PlatformThread::SpawnThread(
       new std::function<void()>([thread_function = std::move(thread_function),
                                  name = std::string(name), attributes] {
         rtc::SetCurrentThreadName(name.c_str());
+
+        char stacktop;
+        AutoRegisterProfiler profiler(name.c_str(), &stacktop);
+
         SetPriority(attributes.priority);
         thread_function();
       });
