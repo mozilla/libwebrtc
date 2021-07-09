@@ -275,8 +275,8 @@ void LogMessage::LogTimestamps(bool on) {
 }
 
 void LogMessage::LogToDebug(LoggingSeverity min_sev) {
-  g_dbg_sev = min_sev;
   webrtc::MutexLock lock(&GetLoggingLock());
+  g_dbg_sev = min_sev;
   UpdateMinLogSeverity();
 }
 
@@ -460,6 +460,9 @@ void LogMessage::OutputToDebug(const LogLineRef& log_line) {
 
 // static
 bool LogMessage::IsNoop(LoggingSeverity severity) {
+  // Added MutexLock to fix tsan warnings on accessing g_dbg_sev. (mjf)
+  // See https://bugs.chromium.org/p/chromium/issues/detail?id=1228729
+  webrtc::MutexLock lock(&GetLoggingLock());
   if (severity >= g_dbg_sev || severity >= g_min_sev)
     return false;
   return streams_empty_.load(std::memory_order_relaxed);
