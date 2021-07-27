@@ -47,7 +47,8 @@ void SourceTracker::OnFrameDeliveredInternal(
       SourceKey key(RtpSourceType::CSRC, csrc);
       SourceEntry& entry = UpdateEntry(key);
 
-      entry.timestamp = now;
+      const auto packet_time = packet_info.receive_time();
+      entry.timestamp = packet_time.ms() ? packet_time : now;
       entry.audio_level = packet_info.audio_level();
       entry.absolute_capture_time = packet_info.absolute_capture_time();
       entry.local_capture_clock_offset =
@@ -85,6 +86,10 @@ std::vector<RtpSource> SourceTracker::GetSources() const {
             .absolute_capture_time = entry.absolute_capture_time,
             .local_capture_clock_offset = entry.local_capture_clock_offset});
   }
+
+  std::sort(sources.begin(), sources.end(), [](const auto &a, const auto &b){
+    return a.timestamp_ms() > b.timestamp_ms();
+  });
 
   return sources;
 }
