@@ -369,7 +369,6 @@ int AudioReceiveStreamImpl::GetBaseMinimumPlayoutDelayMs() const {
 }
 
 std::vector<RtpSource> AudioReceiveStreamImpl::GetSources() const {
-  RTC_DCHECK_RUN_ON(&worker_thread_checker_);
   return source_tracker_.GetSources();
 }
 
