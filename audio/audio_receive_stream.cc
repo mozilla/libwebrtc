@@ -283,8 +283,7 @@ RtpHeaderExtensionMap AudioReceiveStream::GetRtpExtensionMap() const {
 
 webrtc::AudioReceiveStream::Stats AudioReceiveStream::GetStats(
     bool get_and_clear_legacy_stats) const {
-  // TODO: Mozilla - currently we run stats on the STS thread
-  //RTC_DCHECK_RUN_ON(&worker_thread_checker_);
+  RTC_DCHECK_RUN_ON(&worker_thread_checker_);
   webrtc::AudioReceiveStream::Stats stats;
   stats.remote_ssrc = remote_ssrc();
 
