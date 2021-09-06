@@ -868,10 +868,6 @@ CallReceiveStatistics ChannelReceive::GetRTCPStatistics() const {
     stats.total_round_trip_time = non_sender_rtt_stats->total_round_trip_time;
   }
 
-  // --- Remote side
-  rtp_rtcp_->RemoteRTCPSenderInfo(&stats.rtcp_sender_packets_sent,
-                                  &stats.rtcp_sender_octets_sent,
-                                  &stats.rtcp_sender_ntp_timestamp_ms);
   return stats;
 }
 

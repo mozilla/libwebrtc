@@ -400,8 +400,6 @@ class RTCPReceiver final {
   // Received sender report.
   NtpTime remote_sender_ntp_time_ RTC_GUARDED_BY(rtcp_receiver_lock_);
   uint32_t remote_sender_rtp_time_ RTC_GUARDED_BY(rtcp_receiver_lock_);
-  uint32_t remote_sender_packet_count_ RTC_GUARDED_BY(rtcp_receiver_lock_);
-  uint32_t remote_sender_octet_count_ RTC_GUARDED_BY(rtcp_receiver_lock_);
   // When did we receive the last send report.
   NtpTime last_received_sr_ntp_ RTC_GUARDED_BY(rtcp_receiver_lock_);
   uint32_t remote_sender_packet_count_ RTC_GUARDED_BY(rtcp_receiver_lock_);
