@@ -78,9 +78,6 @@ struct CallReceiveStatistics {
   absl::optional<TimeDelta> round_trip_time;
   TimeDelta total_round_trip_time = TimeDelta::Zero();
   int round_trip_time_measurements;
-  uint32_t rtcp_sender_packets_sent;
-  uint32_t rtcp_sender_octets_sent;
-  int64_t rtcp_sender_ntp_timestamp_ms;
 };
 
 namespace voe {
