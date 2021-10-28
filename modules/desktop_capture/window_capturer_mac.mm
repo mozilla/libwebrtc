@@ -169,8 +169,9 @@ void WindowCapturerMac::CaptureFrame() {
           return webrtc::GetWindowList(
               [sources](CFDictionaryRef window) {
                 WindowId window_id = GetWindowId(window);
+                int pid = GetWindowOwnerPid(window);
                 if (window_id != kNullWindowId) {
-                  sources->push_back(DesktopCapturer::Source{window_id, GetWindowTitle(window)});
+                  sources->push_back(DesktopCapturer::Source{window_id, pid, GetWindowTitle(window)});
                 }
                 return true;
               },
