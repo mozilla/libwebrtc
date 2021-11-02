@@ -95,6 +95,9 @@ Call* CallFactory::CreateCall(const Call::Config& config) {
 
   RtpTransportConfig transportConfig = config.ExtractTransportConfig();
 
+  RTC_CHECK(false);
+  return nullptr;
+  /* Mozilla: Avoid this since it could use GetRealTimeClock().
   Call* call =
       Call::Create(config, Clock::GetRealTimeClock(),
                    config.rtp_transport_controller_send_factory->Create(
@@ -107,6 +110,7 @@ Call* CallFactory::CreateCall(const Call::Config& config) {
   }
 
   return call;
+   */
 }
 
 std::unique_ptr<CallFactoryInterface> CreateCallFactory() {
