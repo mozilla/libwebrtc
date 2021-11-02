@@ -116,7 +116,7 @@ class RepeatingTaskHandle {
                                    Closure&& closure,
                                    TaskQueueBase::DelayPrecision precision =
                                        TaskQueueBase::DelayPrecision::kLow,
-                                   Clock* clock = Clock::GetRealTimeClock()) {
+                                   Clock* clock = Clock::GetRealTimeClockRaw()) {
     auto alive_flag = PendingTaskSafetyFlag::CreateDetached();
     webrtc_repeating_task_impl::RepeatingTaskHandleDTraceProbeStart();
     task_queue->PostTask(
@@ -136,7 +136,7 @@ class RepeatingTaskHandle {
       Closure&& closure,
       TaskQueueBase::DelayPrecision precision =
           TaskQueueBase::DelayPrecision::kLow,
-      Clock* clock = Clock::GetRealTimeClock()) {
+      Clock* clock = Clock::GetRealTimeClockRaw()) {
     auto alive_flag = PendingTaskSafetyFlag::CreateDetached();
     webrtc_repeating_task_impl::RepeatingTaskHandleDTraceProbeDelayedStart();
     task_queue->PostDelayedTaskWithPrecision(

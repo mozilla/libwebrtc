@@ -157,6 +157,9 @@ Call* CallFactory::CreateCall(const Call::Config& config) {
 
   if (!send_degradation_configs.empty() ||
       !receive_degradation_configs.empty()) {
+    RTC_CHECK(false);
+    return nullptr;
+    /* Mozilla: Avoid this since it could use GetRealTimeClock().
     return new DegradedCall(
         std::unique_ptr<Call>(Call::Create(
             config, Clock::GetRealTimeClock(),
@@ -166,6 +169,7 @@ Call* CallFactory::CreateCall(const Call::Config& config) {
                 transportConfig, Clock::GetRealTimeClock(),
                 ProcessThread::Create("PacerThread")))),
         send_degradation_configs, receive_degradation_configs);
+     */
   }
 
   if (!module_thread_) {
@@ -176,10 +180,14 @@ Call* CallFactory::CreateCall(const Call::Config& config) {
         });
   }
 
+  RTC_CHECK(false);
+  return nullptr;
+  /* Mozilla: Avoid this since it could use GetRealTimeClock().
   return Call::Create(config, Clock::GetRealTimeClock(), module_thread_,
                       config.rtp_transport_controller_send_factory->Create(
                           transportConfig, Clock::GetRealTimeClock(),
                           ProcessThread::Create("PacerThread")));
+   */
 }
 
 std::unique_ptr<CallFactoryInterface> CreateCallFactory() {
