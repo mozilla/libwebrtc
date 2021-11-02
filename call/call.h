@@ -58,7 +58,9 @@ class Call {
     int64_t rtt_ms = -1;
   };
 
+/* Mozilla: Avoid this since it could use GetRealTimeClock().
   static Call* Create(const Call::Config& config);
+ */
   static Call* Create(const Call::Config& config,
                       Clock* clock,
                       std::unique_ptr<RtpTransportControllerSendInterface>
