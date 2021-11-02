@@ -129,6 +129,7 @@ bool DegradedCall::FakeNetworkPipeTransportAdapter::SendRtcp(
   return true;
 }
 
+/* Mozilla: Avoid this since it could use GetRealTimeClock().
 DegradedCall::DegradedCall(
     std::unique_ptr<Call> call,
     const std::vector<TimeScopedNetworkConfig>& send_configs,
@@ -165,6 +166,7 @@ DegradedCall::DegradedCall(
     }
   }
 }
+*/
 
 DegradedCall::~DegradedCall() {
   RTC_DCHECK_RUN_ON(call_->worker_thread());
