@@ -428,7 +428,7 @@ ChannelSend::ChannelSend(
       transport_controller->GetRtcpObserver();
   configuration.transport_feedback_callback =
       transport_controller->transport_feedback_observer();
-  configuration.clock = (clock ? clock : Clock::GetRealTimeClock());
+  configuration.clock = clock;
   configuration.audio = true;
   configuration.outgoing_transport = rtp_transport;
 
