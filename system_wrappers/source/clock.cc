@@ -87,7 +87,6 @@ class RealTimeClock : public Clock {
   Timestamp CurrentTime() override {
     return Timestamp::Micros(rtc::TimeMicros());
   }
-
   NtpTime CurrentNtpTime() override {
     return use_system_independent_ntp_time_ ? TimeMicrosToNtp(rtc::TimeMicros())
                                             : SystemDependentNtpTime();
