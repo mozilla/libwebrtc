@@ -441,7 +441,7 @@ ChannelSend::ChannelSend(
   configuration.report_block_data_observer = this;
   configuration.network_link_rtcp_observer =
       transport_controller->GetRtcpObserver();
-  configuration.clock = (clock ? clock : Clock::GetRealTimeClock());
+  configuration.clock = clock;
   configuration.audio = true;
   configuration.outgoing_transport = rtp_transport;
 
