@@ -56,7 +56,7 @@ class RepeatingTaskHandle {
                                    absl::AnyInvocable<TimeDelta()> closure,
                                    TaskQueueBase::DelayPrecision precision =
                                        TaskQueueBase::DelayPrecision::kLow,
-                                   Clock* clock = Clock::GetRealTimeClock());
+                                   Clock* clock = Clock::GetRealTimeClockRaw());
 
   // DelayedStart is equivalent to Start except that the first invocation of the
   // closure will be delayed by the given amount.
@@ -66,7 +66,7 @@ class RepeatingTaskHandle {
       absl::AnyInvocable<TimeDelta()> closure,
       TaskQueueBase::DelayPrecision precision =
           TaskQueueBase::DelayPrecision::kLow,
-      Clock* clock = Clock::GetRealTimeClock());
+      Clock* clock = Clock::GetRealTimeClockRaw());
 
   // Stops future invocations of the repeating task closure. Can only be called
   // from the TaskQueue where the task is running. The closure is guaranteed to
