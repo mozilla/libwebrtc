@@ -57,7 +57,7 @@ class RealTimeClock : public Clock {
   }
 };
 
-Clock* Clock::GetRealTimeClock() {
+Clock* Clock::GetRealTimeClockRaw() {
   static Clock* const clock = new RealTimeClock();
   return clock;
 }
