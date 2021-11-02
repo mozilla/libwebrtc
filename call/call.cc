@@ -473,6 +473,7 @@ std::string Call::Stats::ToString(int64_t time_ms) const {
   return ss.str();
 }
 
+/* Mozilla: Avoid this since it could use GetRealTimeClock().
 std::unique_ptr<Call> Call::Create(const CallConfig& config) {
   Clock* clock =
       config.env.has_value() ? &config.env->clock() : Clock::GetRealTimeClock();
@@ -480,6 +481,7 @@ std::unique_ptr<Call> Call::Create(const CallConfig& config) {
                 RtpTransportControllerSendFactory().Create(
                     config.ExtractTransportConfig(), clock));
 }
+ */
 
 std::unique_ptr<Call> Call::Create(
     const CallConfig& config,
