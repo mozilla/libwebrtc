@@ -209,6 +209,7 @@ VideoReceiveStream2::VideoReceiveStream2(
                                  &stats_proxy_,
                                  &stats_proxy_,
                                  nack_periodic_processor,
+                                 &stats_proxy_,
                                  this,  // OnCompleteFrameCallback
                                  std::move(config_.frame_decryptor),
                                  std::move(config_.frame_transformer),
