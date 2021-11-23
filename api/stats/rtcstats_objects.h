@@ -614,6 +614,7 @@ class RTC_EXPORT RTCRemoteInboundRtpStreamStats final
   RTCRemoteInboundRtpStreamStats(const RTCRemoteInboundRtpStreamStats& other);
   ~RTCRemoteInboundRtpStreamStats() override;
 
+  RTCStatsMember<uint64_t> packets_discarded;
   // TODO(hbos): The following RTCReceivedRtpStreamStats metrics should also be
   // implemented: packetsReceived, packetsRepaired,
   // burstPacketsLost, burstPacketsDiscarded, burstLossCount, burstDiscardCount,
