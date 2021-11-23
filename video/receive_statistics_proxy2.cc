@@ -959,6 +959,11 @@ void ReceiveStatisticsProxy::OnDroppedFrames(uint32_t frames_dropped) {
       }));
 }
 
+void ReceiveStatisticsProxy::OnDiscardedPackets(uint32_t packets_discarded) {
+  RTC_DCHECK_RUN_ON(&main_thread_);
+  stats_.packets_discarded += packets_discarded;
+}
+
 void ReceiveStatisticsProxy::OnPreDecode(VideoCodecType codec_type, int qp) {
   RTC_DCHECK_RUN_ON(&main_thread_);
   last_codec_type_ = codec_type;

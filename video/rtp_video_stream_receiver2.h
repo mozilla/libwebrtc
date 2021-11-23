@@ -91,6 +91,7 @@ class RtpVideoStreamReceiver2 : public LossNotificationSender,
       RtcpPacketTypeCounterObserver* rtcp_packet_type_counter_observer,
       RtcpCnameCallback* rtcp_cname_callback,
       NackPeriodicProcessor* nack_periodic_processor,
+      VCMReceiveStatisticsCallback* vcm_receive_statistics,
       // The KeyFrameRequestSender is optional; if not provided, key frame
       // requests are sent via the internal RtpRtcp module.
       OnCompleteFrameCallback* complete_frame_callback,
@@ -361,6 +362,7 @@ class RtpVideoStreamReceiver2 : public LossNotificationSender,
   std::unique_ptr<LossNotificationController> loss_notification_controller_
       RTC_GUARDED_BY(packet_sequence_checker_);
 
+  VCMReceiveStatisticsCallback* const vcm_receive_statistics_;
   video_coding::PacketBuffer packet_buffer_
       RTC_GUARDED_BY(packet_sequence_checker_);
   UniqueTimestampCounter frame_counter_
