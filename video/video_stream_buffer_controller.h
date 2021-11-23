@@ -52,6 +52,8 @@ class VideoStreamBufferControllerStatsObserver {
                                 TimeDelta target_delay,
                                 TimeDelta minimum_delay) = 0;
 
+  virtual void OnDiscardedPackets(uint32_t packets_discarded) = 0;
+
   // Various jitter buffer delays determined by VCMTiming.
   virtual void OnFrameBufferTimingsUpdated(int estimated_max_decode_time_ms,
                                            int current_delay_ms,
@@ -94,6 +96,7 @@ class VideoStreamBufferController {
   void OnTimeout(TimeDelta delay);
   void FrameReadyForDecode(uint32_t rtp_timestamp, Timestamp render_time);
   void UpdateDroppedFrames() RTC_RUN_ON(&worker_sequence_checker_);
+  void UpdateDiscardedPackets() RTC_RUN_ON(&worker_sequence_checker_);
   void UpdateFrameBufferTimings(Timestamp min_receive_time, Timestamp now);
   void UpdateTimingFrameInfo();
   bool IsTooManyFramesQueued() const RTC_RUN_ON(&worker_sequence_checker_);
@@ -121,6 +124,8 @@ class VideoStreamBufferController {
   VideoReceiveStreamTimeoutTracker timeout_tracker_
       RTC_GUARDED_BY(&worker_sequence_checker_);
   int frames_dropped_before_last_new_frame_
+      RTC_GUARDED_BY(&worker_sequence_checker_) = 0;
+  int packets_discarded_before_last_new_frame_
       RTC_GUARDED_BY(&worker_sequence_checker_) = 0;
   VCMVideoProtection protection_mode_
       RTC_GUARDED_BY(&worker_sequence_checker_) = kProtectionNack;
