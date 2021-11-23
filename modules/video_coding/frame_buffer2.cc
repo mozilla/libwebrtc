@@ -278,9 +278,15 @@ std::unique_ptr<EncodedFrame> FrameBuffer::GetNextFrame() {
 
     // Remove decoded frame and all undecoded frames before it.
     if (stats_callback_) {
+      unsigned int discarded_packets = 0;
       unsigned int dropped_frames =
           std::count_if(frames_.begin(), frame_it,
-                        [](const std::pair<const int64_t, FrameInfo>& frame) {
+                        [&discarded_packets](
+                            const std::pair<const int64_t, FrameInfo>& frame) {
+                          if (frame.second.frame) {
+                            discarded_packets +=
+                                frame.second.frame->PacketInfos().size();
+                          }
                           return frame.second.frame != nullptr;
                         });
       if (dropped_frames > 0) {
