@@ -78,7 +78,10 @@ class PacketBuffer {
   ABSL_MUST_USE_RESULT InsertResult
   InsertPacket(std::unique_ptr<Packet> packet);
   ABSL_MUST_USE_RESULT InsertResult InsertPadding(uint16_t seq_num);
-  void ClearTo(uint16_t seq_num);
+
+  // Clear all packets older than |seq_num|. Returns the number of packets
+  // cleared.
+  uint32_t ClearTo(uint16_t seq_num);
   void Clear();
 
   void ForceSpsPpsIdrIsH264Keyframe();
