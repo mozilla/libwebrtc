@@ -215,6 +215,7 @@ RtpVideoStreamReceiver2::RtpVideoStreamReceiver2(
     RtcpPacketTypeCounterObserver* rtcp_packet_type_counter_observer,
     RtcpCnameCallback* rtcp_cname_callback,
     NackPeriodicProcessor* nack_periodic_processor,
+    VCMReceiveStatisticsCallback* vcm_receive_statistics,
     NackSender* nack_sender,
     KeyFrameRequestSender* keyframe_request_sender,
     OnCompleteFrameCallback* complete_frame_callback,
@@ -258,6 +259,7 @@ RtpVideoStreamReceiver2::RtpVideoStreamReceiver2(
                                             &rtcp_feedback_buffer_,
                                             &rtcp_feedback_buffer_,
                                             field_trials_)),
+      vcm_receive_statistics_(vcm_receive_statistics),
       packet_buffer_(kPacketBufferStartSize,
                      PacketBufferMaxSize(field_trials_)),
       reference_finder_(std::make_unique<RtpFrameReferenceFinder>()),
@@ -1100,7 +1102,8 @@ void RtpVideoStreamReceiver2::FrameDecoded(int64_t picture_id) {
     int64_t unwrapped_rtp_seq_num = rtp_seq_num_unwrapper_.Unwrap(seq_num);
     packet_infos_.erase(packet_infos_.begin(),
                         packet_infos_.upper_bound(unwrapped_rtp_seq_num));
-    packet_buffer_.ClearTo(seq_num);
+    uint32_t num_packets_cleared = packet_buffer_.ClearTo(seq_num);
+    vcm_receive_statistics_->OnDiscardedPackets(num_packets_cleared);
     reference_finder_->ClearTo(seq_num);
   }
 }
