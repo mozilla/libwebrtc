@@ -62,7 +62,7 @@ if (!build_with_chromium) {
       "../../system_wrappers",
     ]
 
-    if (is_linux || is_chromeos) {
+    if (is_linux || is_bsd || is_chromeos) {
       sources = [
         "linux/device_info_linux.cc",
         "linux/device_info_v4l2.cc",
