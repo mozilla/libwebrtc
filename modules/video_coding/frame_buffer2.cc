@@ -289,6 +289,9 @@ std::unique_ptr<EncodedFrame> FrameBuffer::GetNextFrame() {
                           }
                           return frame.second.frame != nullptr;
                         });
+      if (discarded_packets > 0) {
+        stats_callback_->OnDiscardedPackets(discarded_packets);
+      }
       if (dropped_frames > 0) {
         stats_callback_->OnDroppedFrames(dropped_frames);
       }
