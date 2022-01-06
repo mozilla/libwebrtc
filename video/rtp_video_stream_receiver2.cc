@@ -44,6 +44,7 @@
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/strings/string_builder.h"
+#include "rtc_base/trace_event.h"
 #include "system_wrappers/include/metrics.h"
 #include "system_wrappers/include/ntp_time.h"
 
@@ -1234,6 +1235,9 @@ void RtpVideoStreamReceiver2::FrameDecoded(int64_t picture_id) {
                         packet_infos_.upper_bound(unwrapped_rtp_seq_num));
     uint32_t num_packets_cleared = packet_buffer_.ClearTo(seq_num);
     if (num_packets_cleared > 0) {
+      TRACE_EVENT2("webrtc",
+                   "RtpVideoStreamReceiver2::FrameDecoded Cleared Old Packets",
+                   "remote_ssrc", config_.rtp.remote_ssrc, "seq_num", seq_num);
       vcm_receive_statistics_->OnDiscardedPackets(num_packets_cleared);
     }
     reference_finder_->ClearTo(seq_num);
