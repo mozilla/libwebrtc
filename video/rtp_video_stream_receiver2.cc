@@ -1253,7 +1253,9 @@ void RtpVideoStreamReceiver2::FrameDecoded(int64_t picture_id) {
     packet_infos_.erase(packet_infos_.begin(),
                         packet_infos_.upper_bound(unwrapped_rtp_seq_num));
     uint32_t num_packets_cleared = packet_buffer_.ClearTo(seq_num);
-    vcm_receive_statistics_->OnDiscardedPackets(num_packets_cleared);
+    if (num_packets_cleared > 0) {
+      vcm_receive_statistics_->OnDiscardedPackets(num_packets_cleared);
+    }
     reference_finder_->ClearTo(seq_num);
   }
 }
