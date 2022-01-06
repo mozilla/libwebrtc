@@ -746,6 +746,12 @@ void RtpVideoStreamReceiver2::OnRtpPacket(const RtpPacketReceived& packet) {
 
 void RtpVideoStreamReceiver2::RequestKeyFrame() {
   RTC_DCHECK_RUN_ON(&worker_task_checker_);
+  TRACE_EVENT2("webrtc", "RtpVideoStreamReceiver2::RequestKeyFrame",
+               "remote_ssrc", config_.rtp.remote_ssrc, "method",
+               keyframe_request_method_ == KeyFrameReqMethod::kPliRtcp   ? "PLI"
+               : keyframe_request_method_ == KeyFrameReqMethod::kFirRtcp ? "FIR"
+               : keyframe_request_method_ == KeyFrameReqMethod::kNone ? "None"
+                                                                      : "Other");
   // TODO(bugs.webrtc.org/10336): Allow the sender to ignore key frame requests
   // issued by anything other than the LossNotificationController if it (the
   // sender) is relying on LNTF alone.
