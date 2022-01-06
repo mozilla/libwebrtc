@@ -30,6 +30,7 @@
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/thread_annotations.h"
+#include "rtc_base/trace_event.h"
 #include "video/frame_decode_scheduler.h"
 #include "video/frame_decode_timing.h"
 #include "video/task_queue_frame_decode_scheduler.h"
@@ -141,6 +142,9 @@ absl::optional<int64_t> VideoStreamBufferController::InsertFrame(
     std::unique_ptr<EncodedFrame> frame) {
   RTC_DCHECK_RUN_ON(&worker_sequence_checker_);
   FrameMetadata metadata(*frame);
+  const uint32_t ssrc =
+      frame->PacketInfos().empty() ? 0 : frame->PacketInfos()[0].ssrc();
+  const int64_t frameId = frame->Id();
   int complete_units = buffer_->GetTotalNumberOfContinuousTemporalUnits();
   if (buffer_->InsertFrame(std::move(frame))) {
     RTC_DCHECK(metadata.receive_time) << "Frame receive time must be set!";
@@ -151,6 +155,9 @@ absl::optional<int64_t> VideoStreamBufferController::InsertFrame(
                                  *metadata.receive_time);
     }
     if (complete_units < buffer_->GetTotalNumberOfContinuousTemporalUnits()) {
+      TRACE_EVENT2("webrtc",
+                   "VideoStreamBufferController::InsertFrame Frame Complete",
+                   "remote_ssrc", ssrc, "frame_id", frameId);
       stats_proxy_->OnCompleteFrame(metadata.is_keyframe, metadata.size,
                                     metadata.contentType);
       MaybeScheduleFrameForRelease();
