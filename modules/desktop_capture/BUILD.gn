@@ -317,7 +317,6 @@ rtc_library("desktop_capture") {
   defines = []
   include_dirs = []
   if (build_with_mozilla) {
-    defines += [ "MULTI_MONITOR_SCREENSHARE" ]
     include_dirs += [ "/media/libyuv/libyuv/include" ]
   }
   deps = []
