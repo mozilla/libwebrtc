@@ -61,7 +61,7 @@ class DeviceInfoV4l2 : public DeviceInfoImpl {
   std::unique_ptr<rtc::PlatformThread> _inotifyEventThread;
   static void InotifyEventThread(void*);
   void InotifyProcess();
-  int _fd_v4l, _fd_snd, _fd_dev, _wd_v4l, _wd_snd, _wd_dev; /* accessed on InotifyEventThread thread */
+  int _fd_v4l, _fd_dev, _wd_v4l, _wd_dev; /* accessed on InotifyEventThread thread */
   std::atomic<bool> _isShutdown;
 #endif
 };
