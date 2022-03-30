@@ -809,7 +809,7 @@ rtc_library("webrtc_vp9") {
     "svc:scalability_structures",
     "svc:scalable_video_controller",
     "svc:svc_rate_allocator",
-    "//third_party/libyuv",
+    #"//third_party/libyuv",
   ]
   absl_deps = [
     "//third_party/abseil-cpp/absl/algorithm:container",
@@ -819,6 +819,10 @@ rtc_library("webrtc_vp9") {
   if (rtc_build_libvpx) {
     deps += [ rtc_libvpx_dir ]
   }
+  include_dirs = [
+    "/media/libyuv",
+    "/media/libyuv/libyuv/include",
+  ]
 }
 
 if (rtc_include_tests) {
