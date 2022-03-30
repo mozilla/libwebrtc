@@ -790,6 +790,13 @@ rtc_library("webrtc_vp9") {
     "svc:svc_rate_allocator",
     "//third_party/libyuv",
   ]
+  if (build_with_mozilla) {
+    deps -= [ "//third_party/libyuv" ]
+    include_dirs = [
+      "/media/libyuv",
+      "/media/libyuv/libyuv/include",
+    ]
+  }
   absl_deps = [
     "//third_party/abseil-cpp/absl/algorithm:container",
     "//third_party/abseil-cpp/absl/container:inlined_vector",
