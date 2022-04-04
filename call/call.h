@@ -21,6 +21,7 @@
 #include "api/task_queue/task_queue_base.h"
 #include "call/audio_receive_stream.h"
 #include "call/audio_send_stream.h"
+#include "call/call_basic_stats.h"
 #include "call/call_config.h"
 #include "call/flexfec_receive_stream.h"
 #include "call/packet_receiver.h"
@@ -30,7 +31,6 @@
 #include "rtc_base/copy_on_write_buffer.h"
 #include "rtc_base/network/sent_packet.h"
 #include "rtc_base/network_route.h"
-#include "rtc_base/ref_count.h"
 
 namespace webrtc {
 
@@ -47,16 +47,7 @@ namespace webrtc {
 class Call {
  public:
   using Config = CallConfig;
-
-  struct Stats {
-    std::string ToString(int64_t time_ms) const;
-
-    int send_bandwidth_bps = 0;       // Estimated available send bandwidth.
-    int max_padding_bitrate_bps = 0;  // Cumulative configured max padding.
-    int recv_bandwidth_bps = 0;       // Estimated available receive bandwidth.
-    int64_t pacer_delay_ms = 0;
-    int64_t rtt_ms = -1;
-  };
+  using Stats = CallBasicStats;
 
   static Call* Create(const Call::Config& config);
   static Call* Create(const Call::Config& config,
