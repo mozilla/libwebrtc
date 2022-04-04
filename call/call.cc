@@ -454,19 +454,6 @@ class Call final : public webrtc::Call,
 };
 }  // namespace internal
 
-std::string Call::Stats::ToString(int64_t time_ms) const {
-  char buf[1024];
-  rtc::SimpleStringBuilder ss(buf);
-  ss << "Call stats: " << time_ms << ", {";
-  ss << "send_bw_bps: " << send_bandwidth_bps << ", ";
-  ss << "recv_bw_bps: " << recv_bandwidth_bps << ", ";
-  ss << "max_pad_bps: " << max_padding_bitrate_bps << ", ";
-  ss << "pacer_delay_ms: " << pacer_delay_ms << ", ";
-  ss << "rtt_ms: " << rtt_ms;
-  ss << '}';
-  return ss.str();
-}
-
 std::unique_ptr<Call> Call::Create(const CallConfig& config) {
   std::unique_ptr<RtpTransportControllerSendInterface> transport_send;
   if (config.rtp_transport_controller_send_factory != nullptr) {
