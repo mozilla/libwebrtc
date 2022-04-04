@@ -36,7 +36,6 @@ namespace test {
 class VideoSendStreamPeer;
 }  // namespace test
 
-class CallStats;
 class IvfFileWriter;
 class RateLimiter;
 class RtpRtcp;
