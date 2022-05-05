@@ -43,6 +43,13 @@ rtc_library("primitives") {
     "../../rtc_base/system:rtc_export",
     "//third_party/libyuv",
   ]
+  if (build_with_mozilla) {
+    deps -= [ "//third_party/libyuv" ]
+    include_dirs = [
+      "/media/libyuv",
+      "/media/libyuv/libyuv/include",
+    ]
+  }
 
   if (!build_with_mozilla) {
     deps += [ "../../rtc_base" ]  # TODO(kjellander): Cleanup in
