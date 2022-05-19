@@ -133,11 +133,6 @@ int DeviceInfoV4l2::ProcessInotifyEvents()
     return 0;
 }
 
-void DeviceInfoV4l2::InotifyEventThread(void* obj)
-{
-    static_cast<DeviceInfoLinux*> (obj)->InotifyProcess();
-}
-
 void DeviceInfoV4l2::InotifyProcess()
 {
     _fd_v4l = inotify_init();
@@ -163,16 +158,14 @@ void DeviceInfoV4l2::InotifyProcess()
 
 DeviceInfoV4l2::DeviceInfoV4l2() : DeviceInfoImpl()
 #ifdef WEBRTC_LINUX
-    , _inotifyEventThread(new rtc::PlatformThread(
-                            InotifyEventThread, this, "InotifyEventThread"))
     , _isShutdown(false)
 #endif
 {
 #ifdef WEBRTC_LINUX
-    if (_inotifyEventThread)
-    {
-        _inotifyEventThread->Start();
-    }
+  _inotifyEventThread = rtc::PlatformThread::SpawnJoinable(
+      [this] {
+        InotifyProcess();
+      }, "InotifyEventThread");
 #endif
 }
 
@@ -184,9 +177,8 @@ DeviceInfoV4l2::~DeviceInfoV4l2() {
 #ifdef WEBRTC_LINUX
     _isShutdown = true;
 
-    if (_inotifyEventThread) {
-        _inotifyEventThread->Stop();
-        _inotifyEventThread = nullptr;
+    if (!_inotifyEventThread.empty()) {
+      _inotifyEventThread.Finalize();
     }
 #endif
 }
