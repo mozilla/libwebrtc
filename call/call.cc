@@ -1393,7 +1393,9 @@ void Call::DeliverRtcp(MediaType media_type, rtc::CopyOnWriteBuffer packet) {
   // and make sure that the flow of packets is consistent from the
   // `RtpTransport` class, via the *Channel and *Engine classes and into Call.
   // This way we'll also know more about the context of the packet.
+#if !defined(WEBRTC_MOZILLA_BUILD)
   RTC_DCHECK_EQ(media_type, MediaType::ANY);
+#endif
 
   // TODO(bugs.webrtc.org/11993): This should execute directly on the network
   // thread.
