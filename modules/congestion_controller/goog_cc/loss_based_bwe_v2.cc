@@ -50,7 +50,9 @@ bool IsValid(Timestamp timestamp) {
   return timestamp.IsFinite();
 }
 
-double ToKiloBytes(DataSize datasize) { return datasize.bytes() / 1000.0; }
+double ToKiloBytes(DataSize datasize) {
+  return datasize.bytes() / 1000.0;
+}
 
 double GetLossProbability(double inherent_loss,
                           DataRate loss_limited_bandwidth,
@@ -208,7 +210,7 @@ void LossBasedBweV2::UpdateBandwidthEstimate(
   if (!IsValid(current_best_estimate_.loss_limited_bandwidth)) {
     if (!IsValid(delay_based_estimate)) {
       RTC_LOG(LS_WARNING) << "The delay based estimate must be finite: "
-                        << ToString(delay_based_estimate);
+                          << ToString(delay_based_estimate);
       return;
     }
     current_best_estimate_.loss_limited_bandwidth = delay_based_estimate;
@@ -308,7 +310,7 @@ void LossBasedBweV2::UpdateBandwidthEstimate(
     if (config_->lower_bound_by_acked_rate_factor > 0.0) {
       current_best_estimate_.loss_limited_bandwidth =
           std::max(current_best_estimate_.loss_limited_bandwidth,
-                  GetInstantLowerBound());
+                   GetInstantLowerBound());
     }
   }
 
@@ -385,7 +387,8 @@ void LossBasedBweV2::UpdateBandwidthEstimate(
 }
 
 bool LossBasedBweV2::IsEstimateIncreasingWhenLossLimited(
-    DataRate old_estimate, DataRate new_estimate) {
+    DataRate old_estimate,
+    DataRate new_estimate) {
   return (old_estimate < new_estimate ||
           (old_estimate == new_estimate &&
            (loss_based_result_.state == LossBasedState::kIncreasing ||
