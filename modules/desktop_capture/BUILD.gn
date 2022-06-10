@@ -265,6 +265,7 @@ if (is_linux || is_chromeos) {
     }
     }
 
+if (!build_with_mozilla) {
     pkg_config("gbm") {
       packages = [ "gbm" ]
     }
@@ -281,6 +282,7 @@ if (is_linux || is_chromeos) {
         ignore_libs = true
       }
     }
+}
 
     if (!rtc_link_pipewire) {
       # When libpipewire is not directly linked, use stubs to allow for dlopening of
@@ -584,6 +586,7 @@ rtc_library("desktop_capture") {
   }
 
   if (rtc_use_pipewire) {
+    if (!build_with_mozilla) {
     sources += [
       "linux/wayland/base_capturer_pipewire.cc",
       "linux/wayland/base_capturer_pipewire.h",
@@ -608,6 +611,12 @@ rtc_library("desktop_capture") {
       "linux/wayland/xdg_desktop_portal_utils.h",
       "linux/wayland/xdg_session_details.h",
     ]
+    } else {
+    sources += [
+      "linux/wayland/moz_base_capturer_pipewire.cc",
+      "linux/wayland/moz_base_capturer_pipewire.h",
+    ]
+    }
 
     if (!build_with_mozilla) {
     configs += [
@@ -636,7 +645,9 @@ rtc_library("desktop_capture") {
       }
     }
 
-    public_configs += [ ":pipewire_config" ]
+    if (!build_with_mozilla) {
+      public_configs += [ ":pipewire_config" ]
+    }
 
     deps += [ "../../rtc_base:sanitizer" ]
   }
