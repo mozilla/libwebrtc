@@ -303,8 +303,8 @@ int32_t VideoCaptureModuleV4L2::StartCapture(
   if (_captureThread.empty()) {
     quit_ = false;
     _captureThread = rtc::PlatformThread::SpawnJoinable(
-        [this] {
-          while (CaptureProcess()) {
+        [self = scoped_refptr(this)] {
+          while (self->CaptureProcess()) {
           }
         },
         "CaptureThread",
