@@ -65,4 +65,7 @@ rtc_library("windows_version_unittest") {
     "..:gunit_helpers",
     "..:logging",
   ]
+  if (build_with_mozilla) {
+    deps -= [ "..:gunit_helpers" ]
+  }
 }
