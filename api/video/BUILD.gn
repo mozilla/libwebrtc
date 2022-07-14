@@ -409,6 +409,14 @@ rtc_library("frame_buffer_unittest") {
     "../../test:scoped_key_value_config",
     "../../test:test_support",
   ]
+  if (build_with_mozilla) {
+    deps -= [
+      "../../test:fake_encoded_frame",
+      "../../test:field_trial",
+      "../../test:scoped_key_value_config",
+      "../../test:test_support",
+    ]
+  }
 }
 
 if (rtc_include_tests) {
