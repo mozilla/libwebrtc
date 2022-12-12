@@ -453,6 +453,7 @@ if (is_ios || is_mac) {
       ]
     }
 
+    if (!build_with_mozilla) {
     rtc_library("videosource_objc") {
       sources = [
         "objc/api/peerconnection/RTCVideoSource+Private.h",
@@ -482,6 +483,7 @@ if (is_ios || is_mac) {
         "..:common_objc",
         ":used_from_extension",
       ]
+    }
     }
 
     rtc_library("videoframebuffer_objc") {
@@ -515,6 +517,7 @@ if (is_ios || is_mac) {
       ]
     }
 
+    if (!build_with_mozilla) {
     rtc_library("opengl_objc") {
       sources = [
         "objc/components/renderer/opengl/RTCDefaultShader.h",
@@ -668,6 +671,7 @@ if (is_ios || is_mac) {
         ":videoframebuffer_objc",
       ]
     }
+    }
 
     rtc_library("videocapture_objc") {
       visibility = [ "*" ]
@@ -696,6 +700,7 @@ if (is_ios || is_mac) {
       ]
     }
 
+    if (!build_with_mozilla) {
     rtc_library("videocodec_objc") {
       visibility = [ "*" ]
       configs += [ "..:no_global_constructors" ]
@@ -1749,6 +1754,7 @@ if (is_ios || is_mac) {
         "CoreVideo.framework",
         "VideoToolbox.framework",
       ]
+    }
     }
   }
 }
