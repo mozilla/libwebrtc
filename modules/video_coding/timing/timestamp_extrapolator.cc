@@ -125,6 +125,7 @@ void TimestampExtrapolator::Update(Timestamp now, uint32_t ts90khz) {
 absl::optional<Timestamp> TimestampExtrapolator::ExtrapolateLocalTime(
     uint32_t timestamp90khz) const {
   int64_t unwrapped_ts90khz = unwrapper_.PeekUnwrap(timestamp90khz);
+  RTC_DCHECK_GE(unwrapped_ts90khz, 0);
 
   if (!first_unwrapped_timestamp_) {
     return absl::nullopt;
