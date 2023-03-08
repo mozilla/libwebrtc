@@ -30,6 +30,7 @@ rtc_source_set("audio_device_default") {
 }
 
 rtc_source_set("audio_device") {
+if (!build_with_mozilla) { # See Bug 1820869.
   visibility = [ "*" ]
   public_deps = [
     ":audio_device_api",
@@ -39,6 +40,7 @@ rtc_source_set("audio_device") {
     # be depended on directly if needed.
     ":audio_device_impl",
   ]
+}
 }
 
 rtc_source_set("audio_device_api") {
@@ -58,6 +60,7 @@ rtc_source_set("audio_device_api") {
 }
 
 rtc_library("audio_device_buffer") {
+if (!build_with_mozilla) { # See Bug 1820869.
   sources = [
     "audio_device_buffer.cc",
     "audio_device_buffer.h",
@@ -84,6 +87,7 @@ rtc_library("audio_device_buffer") {
     "../../system_wrappers",
     "../../system_wrappers:metrics",
   ]
+}
 }
 
 rtc_library("audio_device_generic") {
@@ -180,6 +184,7 @@ rtc_source_set("audio_device_module_from_input_and_output") {
 # Contains default implementations of webrtc::AudioDeviceModule for Windows,
 # Linux, Mac, iOS and Android.
 rtc_library("audio_device_impl") {
+if (!build_with_mozilla) { # See Bug 1820869.
   visibility = [ "*" ]
   deps = [
     ":audio_device_api",
@@ -373,6 +378,7 @@ rtc_library("audio_device_impl") {
     ]
   }
 }
+}
 
 if (is_mac) {
   rtc_source_set("audio_device_impl_frameworks") {
@@ -390,6 +396,7 @@ if (is_mac) {
   }
 }
 
+if (!build_with_mozilla) { # See Bug 1820869.
 rtc_source_set("mock_audio_device") {
   visibility = [ "*" ]
   testonly = true
@@ -406,8 +413,10 @@ rtc_source_set("mock_audio_device") {
     "../../test:test_support",
   ]
 }
+}
 
-if (rtc_include_tests && !build_with_chromium) {
+# See Bug 1820869 for !build_with_mozilla.
+if (rtc_include_tests && !build_with_chromium && !build_with_mozilla) {
   rtc_library("audio_device_unittests") {
     testonly = true
 
