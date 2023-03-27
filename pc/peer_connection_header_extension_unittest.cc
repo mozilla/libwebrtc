@@ -312,8 +312,6 @@ TEST_P(PeerConnectionHeaderExtensionTest,
     EXPECT_EQ(extension.direction, RtpTransceiverDirection::kStopped);
     EXPECT_NE(extension.uri, "urn:bogus");
   }
-}
-
 INSTANTIATE_TEST_SUITE_P(
     ,
     PeerConnectionHeaderExtensionTest,
