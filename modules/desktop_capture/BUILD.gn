@@ -286,7 +286,6 @@ if ((is_linux || is_chromeos) && rtc_use_pipewire) {
 rtc_library("desktop_capture") {
   visibility = [ "*" ]
   defines = []
-  include_dirs = []
   deps = []
   public_configs = [ ":x11_config" ]
   sources = [
@@ -521,11 +520,6 @@ rtc_library("desktop_capture") {
   }
 
   deps += [ "//third_party/libyuv" ]
-  if (build_with_mozilla) {
-    include_dirs += [
-      "/third_party/pipewire",
-    ]
-  }
 
   if (use_desktop_capture_differ_sse2) {
     deps += [ ":desktop_capture_differ_sse2" ]
