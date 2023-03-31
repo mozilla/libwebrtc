@@ -29,19 +29,6 @@
 #include "modules/rtp_rtcp/include/report_block_data.h"
 #include "rtc_base/checks.h"
 
-namespace webrtc {
-
-webrtc::RTCError InvokeSetParametersCallback(SetParametersCallback& callback,
-                                             RTCError error) {
-  if (callback) {
-    std::move(callback)(error);
-    callback = nullptr;
-  }
-  return error;
-}
-
-}  // namespace webrtc
-
 namespace cricket {
 using webrtc::FrameDecryptorInterface;
 using webrtc::FrameEncryptorInterface;
