@@ -49,9 +49,9 @@ int32_t DeviceInfoPipeWire::GetDeviceName(uint32_t deviceNumber,
                                           char* deviceUniqueIdUTF8,
                                           uint32_t deviceUniqueIdUTF8Length,
                                           char* productUniqueIdUTF8,
-                                          uint32_t productUniqueIdUTF8Length) {
+                                          uint32_t productUniqueIdUTF8Length,
+                                          pid_t* pid) {
   RTC_CHECK(pipewire_session_);
-
   if (deviceNumber >= NumberOfDevices())
     return -1;
 
