@@ -55,7 +55,7 @@ class RTC_EXPORT VideoCaptureOptions {
 
   void Init(Callback* callback);
 
-#if defined(WEBRTC_LINUX)
+#if defined(WEBRTC_LINUX) || defined(WEBRTC_BSD)
   bool allow_v4l2() const { return allow_v4l2_; }
   void set_allow_v4l2(bool allow) { allow_v4l2_ = allow; }
 #endif
@@ -68,7 +68,7 @@ class RTC_EXPORT VideoCaptureOptions {
 #endif
 
  private:
-#if defined(WEBRTC_LINUX)
+#if defined(WEBRTC_LINUX) || defined(WEBRTC_BSD)
   bool allow_v4l2_ = false;
 #endif
 #if defined(WEBRTC_USE_PIPEWIRE)
