@@ -156,6 +156,7 @@ RTPSenderVideo::RTPSenderVideo(const Config& config)
                     this,
                     config.frame_transformer,
                     rtp_sender_->SSRC(),
+                    rtp_sender_->Rid(),
                     config.task_queue_factory)
               : nullptr),
       enable_av1_even_split_(
