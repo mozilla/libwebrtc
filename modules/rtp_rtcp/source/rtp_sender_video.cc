@@ -159,6 +159,7 @@ RTPSenderVideo::RTPSenderVideo(const Config& config)
                     config.frame_transformer,
                     rtp_sender_->SSRC(),
                     rtp_sender_->Csrcs(),
+                    rtp_sender_->Rid(),
                     config.task_queue_factory)
               : nullptr) {
   if (frame_transformer_delegate_)
