@@ -51,6 +51,11 @@ class TransformableVideoReceiverFrame
     return frame_->FrameType() == VideoFrameType::kVideoFrameKey;
   }
 
+  const std::string& GetRid() const override {
+    static const std::string empty;
+    return empty;
+  }
+
   VideoFrameMetadata Metadata() const override { return metadata_; }
 
   void SetMetadata(const VideoFrameMetadata&) override {
