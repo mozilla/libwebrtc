@@ -493,6 +493,7 @@ void RtpVideoSender::SetActiveModulesLocked(bool sending) {
   active_ = sending;
   for (size_t i = 0; i < rtp_streams_.size(); ++i) {
     RtpRtcpInterface& rtp_module = *rtp_streams_[i].rtp_rtcp;
+    // Sends a kRtcpByeCode when going from true to false.
     rtp_module.SetSendingStatus(sending);
     rtp_module.SetSendingMediaStatus(sending);
     if (sending) {
