@@ -49,6 +49,9 @@ rtc_source_set("enable_media") {
     "../rtc_base/system:rtc_export",
     "environment",
   ]
+  if (build_with_mozilla) {
+    deps -= [ "../pc:media_factory" ]
+  }
 }
 
 rtc_source_set("enable_media_with_defaults") {
