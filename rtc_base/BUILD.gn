@@ -1020,6 +1020,12 @@ rtc_library("threading") {
     "thread.cc",
     "thread.h",
   ]
+  if (is_bsd && build_with_mozilla) {
+    sources -= [
+      "physical_socket_server.cc",
+      "physical_socket_server.h",
+    ]
+  }
   deps = [
     ":async_dns_resolver",
     ":byte_order",
